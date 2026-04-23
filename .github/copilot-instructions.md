@@ -21,6 +21,11 @@ Use these instructions when making project changes, adding new features, or gene
     - 'src/Ui.Maui/Ui.Maui.csproj' project for hosting of the MAUI Blazor application
   - 'tests/' for all tests
     - 'tests/<projectname>.Tests/<projectname>.Tests.csproj' for tests related to a specific project. For example, 'tests/Domain.Tests/Domain.Tests.csproj' for tests related to the Domain project. For example, 'tests/Adapter.Speech.Speechify.Tests/Adapter.Speech.Speechify.Tests.csproj' for tests related to the 'src/Adapter.Speech.Speechify/src/Adapter.Speech.Speechify.csproj' project
+  - 'infra/' for all components required for deploying and hosting the application, such as Dockerfiles, Kubernetes manifests, and maui app generation scripts.
+  - 'docs/' for all documentation for this project
+    - 'docs/users/' for user-facing documentation, such as markdown files describing how to use the application and its features.
+    - 'docs/dev/' for developer-facing documentation, such as markdown files describing the architecture of the application, how to set up a development environment, and how to contribute to the project.
+    - all documentation files should have a file naming convention that is readable using lower-case kebab case. For example: 'how-to-use-flashcard-review-mode.md' for a user-facing documentation file describing how to use the flashcard review mode, and 'application-architecture.md' for a developer-facing documentation file describing the architecture of the application.
 - Prefer clean separation between platform-agnostic logic and UI-specific implementation.
 - Keep code maintainable and simple, with reusable components and services.
 - Use keywords in suggestions: flashcards, markdown, definition matching, study mode, guided questions, MAUI Blazor, web app.
