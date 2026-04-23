@@ -31,3 +31,8 @@ Use these instructions when making project changes, adding new features, or gene
 - Use keywords in suggestions: flashcards, markdown, definition matching, study mode, guided questions, MAUI Blazor, web app.
 
 Future expansion should preserve a shared core that can be used across web and Blazor platforms.
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->
