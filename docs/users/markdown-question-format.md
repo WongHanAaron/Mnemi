@@ -21,7 +21,17 @@ What year did World War II end?::1945
 
 ### Single-line cloze
 ```markdown
-The capital of France is [____]::Paris
+The capital of France is {{Paris}}::
+```
+
+### Single-line cloze with multiple choice
+```markdown
+The capital of France is {{Washington|**Paris**}}::
+```
+
+### Single-line cloze with multiple questions and options
+```markdown
+The capital of France is {{Washington|**Paris**}} and is {{100}} years old::
 ```
 
 ### Single-line multiple choice
