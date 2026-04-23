@@ -72,6 +72,35 @@ Example fuzz behavior:
 - The fuzz is small and does not override the core interval calculation
 - Fuzz is only applied after the final interval is calculated
 
+## Persisted state format
+
+To restore learned state for each question, Mnemi stores scheduler state in a hidden HTML comment.
+
+Storage format:
+
+```markdown
+<!-- mnemi: 7f4a2e | status=review | days=19 | ease=2.4 | due=2026-05-12 | last=good | lapses=1 | reps=14 -->
+```
+
+Fields:
+
+- First value (no key): SHA256 hash of question content (first 6 chars); detects content changes
+- `status`: `new`, `learning`, `review`, or `lapsed`
+- `days`: current interval in days
+- `ease`: current ease factor
+- `due`: next due date in `YYYY-MM-DD`
+- `last`: last button pressed (`again`, `hard`, `good`, `easy`)
+- `lapses`: lapse count
+- `reps`: total reviews
+
+Behavior on load:
+
+- If hash matches current question content → state is valid, use it
+- If hash differs (content edited) → state resets to `new` automatically
+- If metadata missing → initialize as `new`
+
+This is generated and updated by software after each review. Users should not manually edit it.
+
 ## Example transitions
 
 ### Example 1: review success
