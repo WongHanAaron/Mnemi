@@ -2,12 +2,36 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Mnemi.Domain.Entities;
+using EntityGroup = Mnemi.Domain.Entities.Group;
 
-namespace Mnemi.Domain.Cards;
+namespace Mnemi.Domain.Parsing;
 
-public sealed class MetadataParser
+public interface IMetadataParser
 {
+    int FindMetadataLine(string[] lines, int startIndex, out MetadataResult result);
+
+    bool TryParseComment(string text, out MetadataResult result);
+}
+
+public sealed class MetadataParser : IMetadataParser
+{
+    private const string DefaultStatus = "new";
+    private const string StatusKey = "status";
+    private const string DaysKey = "days";
+    private const string EaseKey = "ease";
+    private const string DueKey = "due";
+    private const string LastKey = "last";
+    private const string LapsesKey = "lapses";
+    private const string RepsKey = "reps";
+    private const string TagKey = "tag";
     private static readonly Regex MnemiCommentPattern = new(@"^<!--\s*mnemi:\s*(.*?)\s*-->$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    private readonly IGroupParser _groupParser;
+
+    public MetadataParser(IGroupParser groupParser)
+    {
+        _groupParser = groupParser ?? throw new ArgumentNullException(nameof(groupParser));
+    }
 
     public int FindMetadataLine(string[] lines, int startIndex, out MetadataResult result)
     {
@@ -25,11 +49,11 @@ public sealed class MetadataParser
                 break;
             }
 
-            result = ParseMnemiMetadata(match.Groups[1].Value);
+            result = ParseMnemiMetadata(match.Groups[1].Value, _groupParser);
             return index;
         }
 
-        result = new MetadataResult(LearningState.New, Array.Empty<Group>());
+        result = new MetadataResult(LearningState.New, Array.Empty<EntityGroup>());
         return -1;
     }
 
@@ -37,36 +61,36 @@ public sealed class MetadataParser
     {
         if (string.IsNullOrWhiteSpace(text))
         {
-            result = new MetadataResult(LearningState.New, Array.Empty<Group>());
+            result = new MetadataResult(LearningState.New, Array.Empty<EntityGroup>());
             return false;
         }
 
         var match = MnemiCommentPattern.Match(text.Trim());
         if (!match.Success)
         {
-            result = new MetadataResult(LearningState.New, Array.Empty<Group>());
+            result = new MetadataResult(LearningState.New, Array.Empty<EntityGroup>());
             return false;
         }
 
-        result = ParseMnemiMetadata(match.Groups[1].Value);
+        result = ParseMnemiMetadata(match.Groups[1].Value, _groupParser);
         return true;
     }
 
-    private static MetadataResult ParseMnemiMetadata(string metadataText)
+    private static MetadataResult ParseMnemiMetadata(string metadataText, IGroupParser groupParser)
     {
         var tokens = metadataText.Split('|', StringSplitOptions.RemoveEmptyEntries)
             .Select(token => token.Trim())
             .ToArray();
 
         string? hash = null;
-        var status = "new";
+        var status = DefaultStatus;
         int? days = null;
         decimal? ease = null;
         DateTime? due = null;
         string? lastResponse = null;
         int? lapses = null;
         int? repetitions = null;
-        var tagOverride = new List<Group>();
+        var tagOverride = new List<EntityGroup>();
 
         foreach (var token in tokens)
         {
@@ -92,58 +116,58 @@ public sealed class MetadataParser
 
             switch (key)
             {
-                case "status":
+                case StatusKey:
                     status = value;
                     break;
-                case "days":
+                case DaysKey:
                     if (int.TryParse(value, out var parsedDays))
                     {
                         days = parsedDays;
                     }
                     break;
-                case "ease":
+                case EaseKey:
                     if (decimal.TryParse(value, out var parsedEase))
                     {
                         ease = parsedEase;
                     }
                     break;
-                case "due":
+                case DueKey:
                     if (DateTime.TryParse(value, out var parsedDue))
                     {
                         due = parsedDue;
                     }
                     break;
-                case "last":
+                case LastKey:
                     lastResponse = value;
                     break;
-                case "lapses":
+                case LapsesKey:
                     if (int.TryParse(value, out var parsedLapses))
                     {
                         lapses = parsedLapses;
                     }
                     break;
-                case "reps":
+                case RepsKey:
                     if (int.TryParse(value, out var parsedReps))
                     {
                         repetitions = parsedReps;
                     }
                     break;
-                case "tag":
-                    tagOverride.AddRange(ParseTagOverride(value));
+                case TagKey:
+                    tagOverride.AddRange(ParseTagOverride(value, groupParser));
                     break;
             }
         }
 
-        var state = new LearningState(hash, status, days, ease, due, lastResponse, lapses, repetitions, tagOverride.Any() ? Group.PruneAncestors(tagOverride) : null);
-        return new MetadataResult(state, state.TagOverride ?? Array.Empty<Group>());
+        var state = new LearningState(hash, status, days, ease, due, lastResponse, lapses, repetitions, tagOverride.Any() ? groupParser.PruneAncestors(tagOverride) : null);
+        return new MetadataResult(state, state.TagOverride ?? Array.Empty<EntityGroup>());
     }
 
-    private static IReadOnlyList<Group> ParseTagOverride(string tagValue)
+    private static IReadOnlyList<EntityGroup> ParseTagOverride(string tagValue, IGroupParser groupParser)
     {
         return tagValue.Split(',', StringSplitOptions.RemoveEmptyEntries)
-            .Select(part => Group.Parse(part.Trim()))
+            .Select(part => groupParser.Parse(part.Trim()))
             .ToList();
     }
 }
 
-public sealed record MetadataResult(LearningState LearningState, IReadOnlyList<Group> TagOverride);
+public sealed record MetadataResult(LearningState LearningState, IReadOnlyList<EntityGroup> TagOverride);

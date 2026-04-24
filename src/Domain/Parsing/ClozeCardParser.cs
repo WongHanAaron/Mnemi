@@ -1,19 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mnemi.Domain.Entities;
 
-namespace Mnemi.Domain.Cards;
+namespace Mnemi.Domain.Parsing;
 
-internal sealed class ClozeCardParser : CardTypeParser
+public sealed class ClozeCardParser : CardTypeParser
 {
-    public ClozeCardParser(MetadataParser metadataParser)
-        : base(metadataParser)
+    public ClozeCardParser(IMetadataParser metadataParser, ICardParserUtilities cardParserUtilities)
+        : base(metadataParser, cardParserUtilities)
     {
     }
 
     public override bool CanParse(string trimmedLine)
     {
-        return trimmedLine.StartsWith("#!cloze", StringComparison.OrdinalIgnoreCase);
+        return trimmedLine.StartsWith(CardParsingConstants.ClozeBlockStart, StringComparison.OrdinalIgnoreCase);
     }
 
     public override int Parse(Document document, string[] lines, int startIndex, List<Card> cards)
@@ -25,7 +26,7 @@ internal sealed class ClozeCardParser : CardTypeParser
         }
 
         var blockLines = lines[(startIndex + 1)..endIndex];
-        var separator = Array.FindIndex(blockLines, line => line.Trim() == "::");
+        var separator = Array.FindIndex(blockLines, line => line.Trim() == CardParsingConstants.CardSeparator);
         if (separator < 0)
         {
             return endIndex;

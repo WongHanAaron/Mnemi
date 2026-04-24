@@ -1,16 +1,30 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
+using Mnemi.Domain.Entities;
+using EntityFile = Mnemi.Domain.Entities.File;
+using EntityGroup = Mnemi.Domain.Entities.Group;
 
-namespace Mnemi.Domain.Cards;
+namespace Mnemi.Domain.Parsing;
 
-public class DocumentParser
+public interface IDocumentParser
 {
+    Document Parse(EntityFile file);
+}
+
+public class DocumentParser : IDocumentParser
+{
+    private const string TagGroupName = "tag";
     private static readonly Regex TagLinePattern = new("^#(?<tag>[A-Za-z0-9_/]+)$", RegexOptions.Compiled);
     private static readonly Regex CardBoundaryPattern = new(@"(#!qa|#!cloze|#!mcq|::)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    private readonly IGroupParser _groupParser;
 
-    public Document Parse(File file)
+    public DocumentParser(IGroupParser groupParser)
+    {
+        _groupParser = groupParser ?? throw new ArgumentNullException(nameof(groupParser));
+    }
+
+    public Document Parse(EntityFile file)
     {
         if (file == null)
         {
@@ -18,7 +32,7 @@ public class DocumentParser
         }
 
         var lines = SplitLines(file.FileContents);
-        var documentTags = new List<Group>();
+        var documentTags = new List<EntityGroup>();
 
         for (var index = 0; index < lines.Length; index++)
         {
@@ -30,8 +44,8 @@ public class DocumentParser
 
             if (TagLinePattern.IsMatch(trimmedLine))
             {
-                var rawTag = TagLinePattern.Match(trimmedLine).Groups["tag"].Value;
-                documentTags.Add(Group.Parse(rawTag));
+                var rawTag = TagLinePattern.Match(trimmedLine).Groups[TagGroupName].Value;
+                documentTags.Add(_groupParser.Parse(rawTag));
                 continue;
             }
 
@@ -41,13 +55,13 @@ public class DocumentParser
             }
         }
 
-        var normalizedTags = Group.PruneAncestors(documentTags);
+        var normalizedTags = _groupParser.PruneAncestors(documentTags);
         return new Document(file, file.FileContents, normalizedTags);
     }
 
     private static string[] SplitLines(string content)
     {
-        return content?.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None)
+        return content?.Split(new[] { CardParsingConstants.CrLf, CardParsingConstants.Lf }, StringSplitOptions.None)
             ?? Array.Empty<string>();
     }
 }

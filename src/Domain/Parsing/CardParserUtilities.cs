@@ -4,19 +4,45 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using Mnemi.Domain.Entities;
 
-namespace Mnemi.Domain.Cards;
+namespace Mnemi.Domain.Parsing;
 
-internal static class CardParserUtilities
+public interface ICardParserUtilities
 {
+    int FindClosingMarker(string[] lines, int startIndex);
+
+    string[] SplitLines(string content);
+
+    IReadOnlyList<ClozeBlank> ExtractClozeBlanks(string questionText, string answerSection);
+
+    IReadOnlyList<ClozeAnswerOption> ParseClozeOptions(string rawContent);
+
+    IReadOnlyList<MultipleChoiceOption> ExtractMultipleChoiceOptions(IEnumerable<string> rawParts);
+
+    IReadOnlyList<MultipleChoiceOption> ExtractMultipleChoiceOptions(string[] optionLines);
+
+    string NormalizeOptionText(string text);
+
+    string ComputeHash(string content);
+}
+
+public sealed class CardParserUtilities : ICardParserUtilities
+{
+    private const string ClozeStrongDelimiter = "**";
+    private const string ClozeDelimiter = "*";
+    private const string MarkerGroupName = "marker";
+    private const string TextGroupName = "text";
+    private const string CorrectMarker = "x";
+    private const string HashByteSeparator = "-";
     private static readonly Regex ClozePlaceholderPattern = new(@"\{\{([^}]*)\}\}", RegexOptions.Compiled);
     private static readonly Regex McqOptionPattern = new(@"^-\s*\[(?<marker> |x|X)\]\s*(?<text>.*)$", RegexOptions.Compiled);
 
-    public static int FindClosingMarker(string[] lines, int startIndex)
+    public int FindClosingMarker(string[] lines, int startIndex)
     {
         for (var index = startIndex + 1; index < lines.Length; index++)
         {
-            if (lines[index].Trim().Equals("#!", StringComparison.OrdinalIgnoreCase))
+            if (lines[index].Trim().Equals(CardParsingConstants.BlockClosingMarker, StringComparison.OrdinalIgnoreCase))
             {
                 return index;
             }
@@ -25,13 +51,13 @@ internal static class CardParserUtilities
         return -1;
     }
 
-    public static string[] SplitLines(string content)
+    public string[] SplitLines(string content)
     {
-        return content?.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None)
+        return content?.Split(new[] { CardParsingConstants.CrLf, CardParsingConstants.Lf }, StringSplitOptions.None)
             ?? Array.Empty<string>();
     }
 
-    public static IReadOnlyList<ClozeBlank> ExtractClozeBlanks(string questionText, string answerSection)
+    public IReadOnlyList<ClozeBlank> ExtractClozeBlanks(string questionText, string answerSection)
     {
         var placeholders = ClozePlaceholderPattern.Matches(questionText).Cast<Match>().ToArray();
         if (!placeholders.Any())
@@ -57,7 +83,7 @@ internal static class CardParserUtilities
         return blanks;
     }
 
-    private static Dictionary<string, string> BuildAnswerMap(string answerSection)
+    private Dictionary<string, string> BuildAnswerMap(string answerSection)
     {
         var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         if (string.IsNullOrWhiteSpace(answerSection))
@@ -104,7 +130,7 @@ internal static class CardParserUtilities
         return map;
     }
 
-    public static IReadOnlyList<ClozeAnswerOption> ParseClozeOptions(string rawContent)
+    public IReadOnlyList<ClozeAnswerOption> ParseClozeOptions(string rawContent)
     {
         if (string.IsNullOrWhiteSpace(rawContent))
         {
@@ -119,12 +145,12 @@ internal static class CardParserUtilities
             var option = part.Trim();
             var isAccepted = false;
 
-            if (option.StartsWith("**") && option.EndsWith("**"))
+            if (option.StartsWith(ClozeStrongDelimiter, StringComparison.Ordinal) && option.EndsWith(ClozeStrongDelimiter, StringComparison.Ordinal))
             {
                 isAccepted = true;
                 option = option[2..^2].Trim();
             }
-            else if (option.StartsWith("*") && option.EndsWith("*"))
+            else if (option.StartsWith(ClozeDelimiter, StringComparison.Ordinal) && option.EndsWith(ClozeDelimiter, StringComparison.Ordinal))
             {
                 isAccepted = true;
                 option = option[1..^1].Trim();
@@ -141,7 +167,7 @@ internal static class CardParserUtilities
         return options;
     }
 
-    public static IReadOnlyList<MultipleChoiceOption> ExtractMultipleChoiceOptions(IEnumerable<string> rawParts)
+    public IReadOnlyList<MultipleChoiceOption> ExtractMultipleChoiceOptions(IEnumerable<string> rawParts)
     {
         return rawParts
             .Select(raw => raw.Trim())
@@ -151,7 +177,7 @@ internal static class CardParserUtilities
                 var normalized = raw.Trim();
                 var isCorrect = false;
 
-                if (normalized.StartsWith("*") && normalized.EndsWith("*"))
+                if (normalized.StartsWith(ClozeDelimiter, StringComparison.Ordinal) && normalized.EndsWith(ClozeDelimiter, StringComparison.Ordinal))
                 {
                     isCorrect = true;
                     normalized = normalized[1..^1].Trim();
@@ -162,7 +188,7 @@ internal static class CardParserUtilities
             .ToList();
     }
 
-    public static IReadOnlyList<MultipleChoiceOption> ExtractMultipleChoiceOptions(string[] optionLines)
+    public IReadOnlyList<MultipleChoiceOption> ExtractMultipleChoiceOptions(string[] optionLines)
     {
         var options = new List<MultipleChoiceOption>();
         MultipleChoiceOption? current = null;
@@ -179,15 +205,15 @@ internal static class CardParserUtilities
                     options.Add(current);
                 }
 
-                var marker = match.Groups["marker"].Value;
-                var text = match.Groups["text"].Value.Trim();
-                current = new MultipleChoiceOption(NormalizeOptionText(text), string.Equals(marker, "x", StringComparison.OrdinalIgnoreCase));
+                var marker = match.Groups[MarkerGroupName].Value;
+                var text = match.Groups[TextGroupName].Value.Trim();
+                current = new MultipleChoiceOption(NormalizeOptionText(text), string.Equals(marker, CorrectMarker, StringComparison.OrdinalIgnoreCase));
                 continue;
             }
 
-            if (current != null && (line.StartsWith(" ") || line.StartsWith("\t")))
+            if (current != null && (line.StartsWith(CardParsingConstants.Space, StringComparison.Ordinal) || line.StartsWith(CardParsingConstants.Tab, StringComparison.Ordinal)))
             {
-                current = new MultipleChoiceOption(current.Text + " " + line.Trim(), current.IsCorrect);
+                current = new MultipleChoiceOption(current.Text + CardParsingConstants.Space + line.Trim(), current.IsCorrect);
             }
         }
 
@@ -199,10 +225,10 @@ internal static class CardParserUtilities
         return options;
     }
 
-    public static string NormalizeOptionText(string text)
+    public string NormalizeOptionText(string text)
     {
         var trimmed = text.Trim();
-        if (trimmed.StartsWith("*") && trimmed.EndsWith("*") && trimmed.Length > 1)
+        if (trimmed.StartsWith(ClozeDelimiter, StringComparison.Ordinal) && trimmed.EndsWith(ClozeDelimiter, StringComparison.Ordinal) && trimmed.Length > 1)
         {
             trimmed = trimmed[1..^1].Trim();
         }
@@ -210,12 +236,12 @@ internal static class CardParserUtilities
         return trimmed;
     }
 
-    public static string ComputeHash(string content)
+    public string ComputeHash(string content)
     {
         using var sha256 = SHA256.Create();
         var bytes = Encoding.UTF8.GetBytes(content ?? string.Empty);
         var hashBytes = sha256.ComputeHash(bytes);
-        var hex = BitConverter.ToString(hashBytes).Replace("-", string.Empty).ToLowerInvariant();
+        var hex = BitConverter.ToString(hashBytes).Replace(HashByteSeparator, string.Empty, StringComparison.Ordinal).ToLowerInvariant();
         return hex[..8];
     }
 }

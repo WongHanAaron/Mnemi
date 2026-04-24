@@ -1,19 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mnemi.Domain.Entities;
 
-namespace Mnemi.Domain.Cards;
+namespace Mnemi.Domain.Parsing;
 
-internal sealed class McqCardParser : CardTypeParser
+public sealed class QaCardParser : CardTypeParser
 {
-    public McqCardParser(MetadataParser metadataParser)
-        : base(metadataParser)
+    public QaCardParser(IMetadataParser metadataParser, ICardParserUtilities cardParserUtilities)
+        : base(metadataParser, cardParserUtilities)
     {
     }
 
     public override bool CanParse(string trimmedLine)
     {
-        return trimmedLine.StartsWith("#!mcq", StringComparison.OrdinalIgnoreCase);
+        return trimmedLine.StartsWith(CardParsingConstants.QaBlockStart, StringComparison.OrdinalIgnoreCase);
     }
 
     public override int Parse(Document document, string[] lines, int startIndex, List<Card> cards)
@@ -25,27 +26,22 @@ internal sealed class McqCardParser : CardTypeParser
         }
 
         var blockLines = lines[(startIndex + 1)..endIndex];
-        var separator = Array.FindIndex(blockLines, line => line.Trim() == "::");
+        var separator = Array.FindIndex(blockLines, line => line.Trim() == CardParsingConstants.CardSeparator);
         if (separator < 0)
         {
             return endIndex;
         }
 
         var question = string.Join(Environment.NewLine, blockLines[..separator]).Trim();
-        var optionLines = blockLines[(separator + 1)..];
-        var options = CardParserUtilities.ExtractMultipleChoiceOptions(optionLines);
-        if (!options.Any())
-        {
-            return endIndex;
-        }
-
+        var answer = string.Join(Environment.NewLine, blockLines[(separator + 1)..]).Trim();
         var rawContent = string.Join(Environment.NewLine, blockLines).TrimEnd();
+
         var metadataIndex = MetadataParser.FindMetadataLine(lines, endIndex + 1, out var metadata);
         var groups = metadata.TagOverride.Any() ? metadata.TagOverride : document.DocumentTags;
 
-        cards.Add(new MultipleChoiceCard(
+        cards.Add(new QaCard(
             question,
-            options,
+            answer,
             CardParserUtilities.ComputeHash(rawContent),
             groups,
             metadata.LearningState,

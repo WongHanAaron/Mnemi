@@ -1,25 +1,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mnemi.Domain.Entities;
 
-namespace Mnemi.Domain.Cards;
+namespace Mnemi.Domain.Parsing;
 
-internal sealed class InlineCardParser : CardTypeParser
+public sealed class InlineCardParser : CardTypeParser
 {
-    public InlineCardParser(MetadataParser metadataParser)
-        : base(metadataParser)
+    public InlineCardParser(IMetadataParser metadataParser, ICardParserUtilities cardParserUtilities)
+        : base(metadataParser, cardParserUtilities)
     {
     }
 
     public override bool CanParse(string trimmedLine)
     {
-        return trimmedLine.Contains("::", StringComparison.Ordinal);
+        return trimmedLine.Contains(CardParsingConstants.CardSeparator, StringComparison.Ordinal);
     }
 
     public override int Parse(Document document, string[] lines, int startIndex, List<Card> cards)
     {
         var line = lines[startIndex];
-        var splitIndex = line.IndexOf("::", StringComparison.Ordinal);
+        var splitIndex = line.IndexOf(CardParsingConstants.CardSeparator, StringComparison.Ordinal);
         if (splitIndex < 0)
         {
             return startIndex;
@@ -31,7 +32,7 @@ internal sealed class InlineCardParser : CardTypeParser
         var metadataIndex = MetadataParser.FindMetadataLine(lines, startIndex + 1, out var metadata);
         var groups = metadata.TagOverride.Any() ? metadata.TagOverride : document.DocumentTags;
 
-        if (questionText.Contains("{{", StringComparison.Ordinal) && questionText.Contains("}}", StringComparison.Ordinal))
+        if (questionText.Contains(CardParsingConstants.ClozeOpen, StringComparison.Ordinal) && questionText.Contains(CardParsingConstants.ClozeClose, StringComparison.Ordinal))
         {
             var blanks = CardParserUtilities.ExtractClozeBlanks(questionText, answerText);
             if (!blanks.Any())
@@ -52,9 +53,9 @@ internal sealed class InlineCardParser : CardTypeParser
             return startIndex;
         }
 
-        if (answerText.Contains("|"))
+        if (answerText.Contains(CardParsingConstants.MultipleChoiceDelimiter, StringComparison.Ordinal))
         {
-            var options = CardParserUtilities.ExtractMultipleChoiceOptions(answerText.Split('|', StringSplitOptions.RemoveEmptyEntries));
+            var options = CardParserUtilities.ExtractMultipleChoiceOptions(answerText.Split(CardParsingConstants.MultipleChoiceDelimiter, StringSplitOptions.RemoveEmptyEntries));
             if (options.Any())
             {
                 cards.Add(new MultipleChoiceCard(
