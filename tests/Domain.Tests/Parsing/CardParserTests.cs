@@ -10,26 +10,9 @@ namespace Mnemi.Domain.Tests.Parsing;
 
 public class CardParserTests
 {
-    private static IDocumentParser CreateDocumentParser()
-    {
-        return new DocumentParser(new GroupParser());
-    }
+    private static IDocumentParser CreateDocumentParser() => new DocumentParser(new GroupParser());
 
-    private static ICardParser CreateCardParser()
-    {
-        var groupParser = new GroupParser();
-        var metadataParser = new MetadataParser(groupParser);
-        var cardParserUtilities = new CardParserUtilities();
-        var parsers = new ICardTypeParser[]
-        {
-            new QaCardParser(metadataParser, cardParserUtilities),
-            new ClozeCardParser(metadataParser, cardParserUtilities),
-            new McqCardParser(metadataParser, cardParserUtilities),
-            new InlineCardParser(metadataParser, cardParserUtilities)
-        };
-
-        return new CardParser(parsers, cardParserUtilities);
-    }
+    private static ICardParser CreateCardParser() => new CardParser();
 
     [Fact]
     public void CardParser_parses_single_line_qa_with_document_tags()
@@ -111,33 +94,71 @@ What is "ser"?::to be
     }
 
     [Fact]
-    public void CardParser_uses_first_matching_parser_and_skips_comment_lines()
+    public void CardParser_runs_dsl_pipeline_stages_in_order()
     {
-        var file = new DomainFile("deck.md", "notes/deck.md", null, null, "ignored");
+        var file = new DomainFile("deck.md", "notes/deck.md", null, null, "source");
         var document = new Document(file, file.FileContents, Array.Empty<Group>());
 
-        var parserOneMock = new Mock<ICardTypeParser>();
-        parserOneMock.Setup(parser => parser.CanParse(It.IsAny<string>())).Returns(false);
+        var source = new SourceDocument(document.Content, new[] { new SourceLine(1, "source", "source") });
+        var tokens = new[] { new SyntaxToken(TokenKind.Text, 1, "source", "source") };
+        var syntax = new DslDocumentSyntax(new[] { new NoteSyntaxNode(1, "source") });
+        var ast = new DslAstDocument(syntax.Nodes);
+        var bound = new BoundDocument(Array.Empty<BoundQuestion>(), document.DocumentTags);
+        var diagnostics = new DiagnosticBag(Array.Empty<Diagnostic>());
+        var lowered = new[]
+        {
+            new NormalizedCard(CardType.Qa, "id", "raw", "q", "a", null, null, document.DocumentTags, LearningState.New, 1, 1)
+        };
+        var emitted = new Card[]
+        {
+            new QaCard("q", "a", "id", document.DocumentTags, LearningState.New, "raw", file.RelativePath, 1, 1)
+        };
 
-        var parserTwoMock = new Mock<ICardTypeParser>();
-        parserTwoMock.Setup(parser => parser.CanParse("actual-line")).Returns(true);
-        parserTwoMock
-            .Setup(parser => parser.Parse(document, It.IsAny<string[]>(), 1, It.IsAny<List<Card>>()))
-            .Returns(1);
+        var readerMock = new Mock<ISourceReader>();
+        readerMock.Setup(reader => reader.Read(document.Content)).Returns(source);
 
-        var parserUtilitiesMock = new Mock<ICardParserUtilities>();
-        parserUtilitiesMock
-            .Setup(utilities => utilities.SplitLines(document.Content))
-            .Returns(new[] { "<!-- ignored -->", "actual-line" });
+        var scannerMock = new Mock<IMarkdownScanner>();
+        scannerMock.Setup(scanner => scanner.Scan(source)).Returns(tokens);
 
-        var parser = new CardParser(new[] { parserOneMock.Object, parserTwoMock.Object }, parserUtilitiesMock.Object);
+        var syntaxParserMock = new Mock<IMarkdownSyntaxParser>();
+        syntaxParserMock.Setup(parser => parser.Parse(tokens)).Returns(syntax);
+
+        var astBuilderMock = new Mock<IAstBuilder>();
+        astBuilderMock.Setup(builder => builder.Build(syntax)).Returns(ast);
+
+        var binderMock = new Mock<ISemanticBinder>();
+        binderMock.Setup(binder => binder.Bind(document, ast)).Returns(bound);
+
+        var validatorMock = new Mock<ISemanticValidator>();
+        validatorMock.Setup(validator => validator.Validate(bound)).Returns(diagnostics);
+
+        var lowererMock = new Mock<ICardLowerer>();
+        lowererMock.Setup(lowerer => lowerer.Lower(bound)).Returns(lowered);
+
+        var emitterMock = new Mock<ICardEmitter>();
+        emitterMock.Setup(emitter => emitter.Emit(document, lowered)).Returns(emitted);
+
+        var parser = new CardParser(
+            readerMock.Object,
+            scannerMock.Object,
+            syntaxParserMock.Object,
+            astBuilderMock.Object,
+            binderMock.Object,
+            validatorMock.Object,
+            lowererMock.Object,
+            emitterMock.Object);
 
         var cards = parser.Parse(document);
 
-        cards.Should().BeEmpty();
-        parserUtilitiesMock.Verify(utilities => utilities.SplitLines(document.Content), Times.Once);
-        parserOneMock.Verify(mock => mock.CanParse("actual-line"), Times.Once);
-        parserTwoMock.Verify(mock => mock.CanParse("actual-line"), Times.Once);
-        parserTwoMock.Verify(mock => mock.Parse(document, It.IsAny<string[]>(), 1, It.IsAny<List<Card>>()), Times.Once);
+        cards.Should().ContainSingle();
+        cards[0].Should().BeOfType<QaCard>();
+        readerMock.Verify(reader => reader.Read(document.Content), Times.Once);
+        scannerMock.Verify(scanner => scanner.Scan(source), Times.Once);
+        syntaxParserMock.Verify(parser => parser.Parse(tokens), Times.Once);
+        astBuilderMock.Verify(builder => builder.Build(syntax), Times.Once);
+        binderMock.Verify(binder => binder.Bind(document, ast), Times.Once);
+        validatorMock.Verify(validator => validator.Validate(bound), Times.Once);
+        lowererMock.Verify(lowerer => lowerer.Lower(bound), Times.Once);
+        emitterMock.Verify(emitter => emitter.Emit(document, lowered), Times.Once);
     }
 }
