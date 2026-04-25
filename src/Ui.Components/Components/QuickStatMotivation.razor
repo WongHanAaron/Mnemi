@@ -1,0 +1,33 @@
+@using Mnemi.Application.Services
+@inject IStatisticsService StatisticsService
+
+<div class="quick-stat-motivation" AutomationId="QuickStatMotivation" data-testid="quick-stat-motivation">
+    @if (stats != null)
+    {
+        <h2>Quick Stats</h2>
+        <div class="stat-content">
+            <div class="stat-item">
+                <span class="stat-value">@stats.CardsStudied</span>
+                <span class="stat-label">Cards Studied</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">@stats.DayStreak</span>
+                <span class="stat-label">Day Streak!</span>
+            </div>
+        </div>
+        <p class="motivation-message">@stats.MotivationMessage</p>
+    }
+</div>
+
+@code {
+    [Parameter] public Guid UserId { get; set; }
+    private QuickStats? stats;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (UserId != Guid.Empty)
+        {
+            stats = await StatisticsService.GetQuickStatsAsync(UserId);
+        }
+    }
+}

@@ -1,0 +1,34 @@
+@page "/"
+@using Mnemi.Ui.Components.Services
+@using Mnemi.Application.Services
+@inject IUserService UserService
+@inject IStatisticsService StatisticsService
+@inject IViewStateService ViewStateService
+
+<div class="home-container" id="home-view" data-testid="home-view">
+    <div class="user-greeting">
+        <h1>Welcome @userName</h1>
+    </div>
+
+    <div class="main-content">
+        <QuickStatMotivation UserId="@userId" />
+        <RecentStudyDecks />
+        <PinnedDecks />
+    </div>
+
+    <div class="navigation-bar">
+        <ViewSelectionBar />
+    </div>
+</div>
+
+@code {
+    private string userName = "Guest";
+    private Guid userId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await UserService.GetCurrentUserAsync();
+        userName = user.UserName;
+        userId = user.Id;
+    }
+}

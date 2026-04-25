@@ -1,0 +1,31 @@
+@using Mnemi.Application.Services
+@using Mnemi.Domain.Entities
+@inject IDeckService DeckService
+
+<div class="pinned-decks" AutomationId="PinnedDecks" data-testid="pinned-decks">
+    <h2>Pinned Decks</h2>
+    <div class="deck-grid">
+        @foreach (var deck in pinnedDecks)
+        {
+            <div class="deck-card glass-card" AutomationId="PinnedDeckCard" data-testid="pinned-deck-card">
+                <h3>@deck.Title</h3>
+                <p>@deck.Description</p>
+                <BbButton OnClick="@(() => StudyDeck(deck.Id))">Study Now</BbButton>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private IReadOnlyCollection<Deck> pinnedDecks = Array.Empty<Deck>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        pinnedDecks = await DeckService.GetPinnedAsync();
+    }
+
+    private void StudyDeck(Guid deckId)
+    {
+        // Navigation logic will go here
+    }
+}

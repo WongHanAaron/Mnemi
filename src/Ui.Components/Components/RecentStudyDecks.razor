@@ -1,0 +1,26 @@
+@using Mnemi.Application.Services
+@using Mnemi.Domain.Entities
+@inject IDeckService DeckService
+
+<div class="recent-study-decks" AutomationId="RecentStudyDecks" data-testid="recent-study-decks">
+    <h2>Recent Study Decks</h2>
+    <ul class="deck-list">
+        @foreach (var deck in recentDecks)
+        {
+            <li class="deck-item" AutomationId="DeckItem" data-testid="deck-item">
+                <span class="deck-title">@deck.Title</span>
+                <span class="deck-status">@deck.Status</span>
+            </li>
+        }
+    </ul>
+</div>
+
+@code {
+    private IReadOnlyCollection<Deck> recentDecks = Array.Empty<Deck>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        recentDecks = await DeckService.GetAllAsync();
+        // For "recent", we might want to filter or sort later
+    }
+}

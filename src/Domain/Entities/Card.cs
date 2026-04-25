@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 
+using Mnemi.Domain.Enums;
+
 namespace Mnemi.Domain.Entities;
 
 public abstract record Card(

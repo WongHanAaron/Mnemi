@@ -1,0 +1,12 @@
+:root {
+    --bb-primary: hsl(220, 90%, 55%);
+    --bb-secondary: hsl(340, 80%, 60%);
+    --bb-accent: hsl(45, 95%, 50%);
+}
+
+body {
+    margin: 0;
+    font-family: 'OpenSansRegular', sans-serif;
+    background-color: var(--bb-background);
+    color: var(--bb-foreground);
+}
