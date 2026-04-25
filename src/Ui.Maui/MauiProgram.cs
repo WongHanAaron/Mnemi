@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
+using BlazorBlueprint.Components;
 
 namespace Ui.Maui;
 
@@ -22,6 +23,8 @@ public static class MauiProgram
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
 #endif
+
+        builder.Services.AddBlazorBlueprintComponents();
 
         return builder.Build();
     }

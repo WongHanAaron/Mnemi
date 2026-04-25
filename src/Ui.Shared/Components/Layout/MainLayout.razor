@@ -1,0 +1,14 @@
+@inherits LayoutComponentBase
+@using BlazorBlueprint.Components
+
+<div class="page">
+    <main>
+        @Body
+    </main>
+</div>
+
+<!-- Required if you use ToastService to show toasts -->
+<BbToastProvider />
+
+<!-- Required if you use DialogService for programmatic confirm dialogs -->
+<BbDialogProvider />
