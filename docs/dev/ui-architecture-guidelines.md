@@ -200,3 +200,65 @@ UI components should expose clear interaction points, stable loading states, and
 
 ## Practical rules
 Set `AutomationId` on every MAUI element that a test must find, click, type into, or assert against. Prefer Appium for MAUI, Playwright for web, and shared test structure for common workflows.
+
+# Reactive cross-platform layout guidelines
+Build the app as **one shared application model with adaptive presentation**, not as separate web, mobile, and tablet implementations. Shared state, workflows, validation, and business logic should live in `Ui.Application` and `Ui.Domain`, while `Ui.Components` contains host-agnostic Razor UI that adapts to form factor through responsive and adaptive techniques such as CSS Grid, Flexbox, media queries, and runtime layout switching.[^1][^2]
+
+Keep the **workflow and state the same**, but allow the **layout shell, density, and navigation pattern** to change by viewing state. For example, phone layouts may use stacked content and bottom navigation, tablet layouts may use split views, and desktop/web layouts may use side navigation and denser panels; these differences should be handled through adaptive shared components or host shells, not by duplicating business logic.[^3][^1]
+
+## Viewing state rules
+Determine viewing state from **viewport size first**, then refine with **host and orientation** only when needed. Microsoft’s responsive Blazor guidance highlights media queries and runtime adaptation as the core mechanism for adjusting layout and behavior based on screen size.[^4][^1]
+
+Use a small shared abstraction such as `IViewStateService` or `IViewportService` that exposes a normalized state, for example:
+
+- `Phone`
+- `Tablet`
+- `Desktop`
+
+This service should be updated from host-specific viewport or window-size signals and consumed by shared components for layout decisions. The state should describe **layout intent**, not device branding, because a tablet-sized browser window on desktop may need the same layout as a tablet device.[^1][^4]
+
+## Implementation details
+Prefer these rules for identifying viewing state:
+
+- **Phone**: narrow width, compact navigation, stacked panels, reduced density.
+- **Tablet**: medium width, split layouts, dual-pane where useful, moderate density.
+- **Desktop**: wide width, sidebars, multi-column layouts, full-density views.[^1]
+
+A practical implementation is to centralize breakpoints in one shared place, for example:
+
+```csharp
+public enum ViewState
+{
+    Phone,
+    Tablet,
+    Desktop
+}
+
+public static class ViewBreakpoints
+{
+    public const int PhoneMax = 767;
+    public const int TabletMax = 1023;
+}
+```
+
+Then map width to state:
+```csharp
+public static ViewState GetViewState(double width) =>
+    width <= ViewBreakpoints.PhoneMax ? ViewState.Phone :
+    width <= ViewBreakpoints.TabletMax ? ViewState.Tablet :
+    ViewState.Desktop;
+```
+
+The important rule is that all components use the **same breakpoint source**, so the app does not make inconsistent layout decisions across pages. Runtime viewport detection can come from browser media queries or equivalent host window-size events, then be surfaced through a shared service.[^4][^1]
+
+## Decision rules
+Use **CSS-only responsiveness** when the same component structure works and only spacing, grid columns, or visibility need to change. Use **runtime view-state switching** when the app must change component composition, navigation pattern, amount of data shown, or which template gets rendered. Microsoft’s responsive guidance explicitly distinguishes CSS adaptation from runtime adaptive behavior for maximum control.[^4][^1]
+
+Do not infer viewing state from “mobile OS vs desktop OS” alone. The primary decision should be **available width and layout constraints**, because desktop apps can be snapped narrow and tablets can run wide. Host type and orientation should only refine behavior after width-based classification.[^5][^4]
+
+## Practical rules
+- Keep shared state and workflows independent of layout.
+- Base viewing state on centralized breakpoints, not ad hoc per-page checks.
+- Prefer width-based layout classification over device-type detection.
+- Use CSS for simple responsiveness; use runtime state for structural layout changes.
+- Keep host-specific detection logic in MAUI/web services, but expose a shared normalized `ViewState` to components.[^2][^1]
