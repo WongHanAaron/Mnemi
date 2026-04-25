@@ -25,10 +25,14 @@ What::ever
 
         var tokens = scanner.Scan(source);
 
-        tokens.Should().Contain(token => token.Kind == TokenKind.DocumentTag);
-        tokens.Should().Contain(token => token.Kind == TokenKind.QaBlockStart);
-        tokens.Should().Contain(token => token.Kind == TokenKind.BlockClosingMarker);
-        tokens.Should().Contain(token => token.Kind == TokenKind.MetadataComment);
-        tokens.Should().Contain(token => token.Kind == TokenKind.InlineCandidate);
+        tokens.Select(token => token.Kind).Should().ContainInOrder(
+            TokenKind.DocumentTag,
+            TokenKind.QaBlockStart,
+            TokenKind.Text,
+            TokenKind.InlineCandidate,
+            TokenKind.Text,
+            TokenKind.BlockClosingMarker,
+            TokenKind.MetadataComment,
+            TokenKind.InlineCandidate);
     }
 }

@@ -47,3 +47,9 @@ Tests should mock using the Moq library
 
 ## Assertions
 Tests should assert using XUnit's Fluent assertions for improved readability
+
+### Ordered Behavior Assertion
+If the behavior of the class outputs the output in a specific order, be sure that the test assertions assert the expected order and not just that the list contains the required values. Example: TokenExtractor(string value) would output tokens from the string input in a specific order. The test assertion should validate that order.
+
+### Output Content Assertion
+As much as possible, do not perform assertions that just check that a subset of the value exists, but assert the entire value unless the output is far too dynamic. Example: If method 'GenerateTags(Tag tag)' outputs '#tagname', do not just assert '#' or 'tagname' but the entire string '#tagname'.
