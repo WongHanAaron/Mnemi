@@ -1,12 +1,11 @@
-// Ui.Web: Web application host using Blazor WebAssembly
-// Entry point for the browser-based flashcard study application.
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Ui.Web;
 
-namespace Mnemi.Ui.Web;
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
+builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<HeadOutlet>("head::after");
 
-public class Program
-{
-    public static void Main(string[] args)
-    {
-        // Web UI entry point - to be implemented
-    }
-}
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+await builder.Build().RunAsync();

@@ -1,0 +1,68 @@
+/* Base Mobile layout (vertical flow) */
+.home-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 16px;
+    gap: 16px;
+}
+
+.user-greeting {
+    font-size: 1.5rem;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    flex: 1;
+}
+
+.navigation-bar {
+    position: sticky;
+    bottom: 0;
+    background-color: white;
+    padding: 16px 0;
+    border-top: 1px solid #ccc;
+    z-index: 100;
+}
+
+/* Tablet Layout */
+@media (min-width: 768px) {
+    .main-content {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    ::deep .quick-stat-motivation,
+    ::deep .recent-study-decks,
+    ::deep .pinned-decks {
+        flex: 1 1 45%;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 16px;
+    }
+}
+
+/* Desktop/Web Layout */
+@media (min-width: 1024px) {
+    .home-container {
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+    }
+
+    .navigation-bar {
+        position: static;
+        width: 250px;
+        border-top: none;
+        border-right: 1px solid #ccc;
+        height: 100vh;
+        padding-right: 16px;
+    }
+
+    .main-content {
+        flex-direction: column;
+        flex: 1;
+        max-width: 800px;
+    }
+}
