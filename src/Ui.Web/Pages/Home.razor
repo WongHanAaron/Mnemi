@@ -1,0 +1,112 @@
+@page "/"
+@page "/home"
+@using AppHome = Mnemi.Application.Home
+@using UiHome = Mnemi.Ui.Shared.Models.Home
+@inject AppHome.IHomeDashboardService DashboardService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Mnemi Home</PageTitle>
+
+<link rel="stylesheet" href="_content/Ui.Shared/Styles/home-blueprint-theme.css" />
+
+<HomeDashboard Model="Dashboard" OnPrimaryStudyAction="HandlePrimaryStudyActionAsync" OnDeckAction="HandleDeckActionAsync" />
+
+@code {
+    private HomeDashboardViewModel Dashboard { get; set; } = new(
+        Profile: new LearnerProfileSummaryViewModel(null, "Learner", null),
+        QuickStats: Array.Empty<QuickStatMetricViewModel>(),
+        RecentDecks: Array.Empty<StudyDeckSummaryViewModel>(),
+        PinnedDecks: Array.Empty<StudyDeckSummaryViewModel>(),
+        PrimaryStudyAction: new HomePrimaryAction("study-now", "Study now", "/study"),
+        Mode: UiHome.LayoutMode.DesktopHorizontal,
+        IsAdaptiveFallbackActive: false,
+        QuickStatsState: UiHome.SectionDataState.Loading,
+        RecentDecksState: UiHome.SectionDataState.Loading,
+        PinnedDecksState: UiHome.SectionDataState.Loading,
+        LastUpdatedUtc: DateTimeOffset.UtcNow);
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var data = await DashboardService.GetDashboardAsync();
+            Dashboard = Map(data);
+        }
+        catch
+        {
+            Dashboard = Dashboard with
+            {
+                Profile = new LearnerProfileSummaryViewModel(null, "Learner", null),
+                QuickStatsState = UiHome.SectionDataState.MissingData,
+                RecentDecksState = UiHome.SectionDataState.MissingData,
+                PinnedDecksState = UiHome.SectionDataState.MissingData,
+                QuickStats = Array.Empty<QuickStatMetricViewModel>(),
+                RecentDecks = Array.Empty<StudyDeckSummaryViewModel>(),
+                PinnedDecks = Array.Empty<StudyDeckSummaryViewModel>()
+            };
+        }
+    }
+
+    private Task HandlePrimaryStudyActionAsync(HomePrimaryAction action)
+    {
+        if (!string.IsNullOrWhiteSpace(action.TargetRoute))
+        {
+            NavigationManager.NavigateTo(action.TargetRoute);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task HandleDeckActionAsync(DeckPrimaryAction action)
+    {
+        if (!string.IsNullOrWhiteSpace(action.PayloadDeckId))
+        {
+            NavigationManager.NavigateTo($"/home?deck={Uri.EscapeDataString(action.PayloadDeckId)}");
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private static HomeDashboardViewModel Map(AppHome.HomeDashboardData data) => new(
+        Profile: new LearnerProfileSummaryViewModel(
+            data.Profile.DisplayName,
+            data.Profile.GreetingFallback,
+            data.Profile.AvatarInitials),
+        QuickStats: data.QuickStats
+            .Select(metric => new QuickStatMetricViewModel(
+                metric.MetricId,
+                metric.Label,
+                metric.ValueText,
+                metric.TrendText,
+                (UiHome.MetricTrendDirection)metric.TrendDirection,
+                (UiHome.SectionDataState)metric.State))
+            .ToList(),
+        RecentDecks: data.RecentDecks
+            .Select(MapDeck)
+            .ToList(),
+        PinnedDecks: data.PinnedDecks
+            .Select(MapDeck)
+            .ToList(),
+        PrimaryStudyAction: new HomePrimaryAction(
+            data.PrimaryStudyAction.ActionId,
+            data.PrimaryStudyAction.Label,
+            data.PrimaryStudyAction.TargetRoute),
+        Mode: (UiHome.LayoutMode)data.Mode,
+        IsAdaptiveFallbackActive: data.IsAdaptiveFallbackActive,
+        QuickStatsState: (UiHome.SectionDataState)data.QuickStatsState,
+        RecentDecksState: (UiHome.SectionDataState)data.RecentDecksState,
+        PinnedDecksState: (UiHome.SectionDataState)data.PinnedDecksState,
+        LastUpdatedUtc: data.LastUpdatedUtc);
+
+    private static StudyDeckSummaryViewModel MapDeck(AppHome.StudyDeckSummaryData deck) => new(
+        deck.DeckId,
+        deck.Title,
+        deck.Subtitle,
+        deck.ProgressPercent,
+        deck.StatusLabel,
+        deck.ArtworkToken,
+        deck.DueCount,
+        deck.IsPinned,
+        new DeckPrimaryAction(deck.PrimaryAction.ActionId, deck.PrimaryAction.Label, deck.PrimaryAction.PayloadDeckId),
+        (UiHome.SectionDataState)deck.State);
+}

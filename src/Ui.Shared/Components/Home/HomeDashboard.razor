@@ -1,0 +1,185 @@
+@using Mnemi.Ui.Shared.Models.Home
+
+<div class="home-shell @(Model.IsAdaptiveFallbackActive ? "home-shell--adaptive" : string.Empty)" data-testid="home-shell">
+    <HomeSideNav Items="NavItems" ActiveItemId="home" OnNavigate="HandleNavItemSelectedAsync" />
+
+    <main class="home-main" aria-live="polite">
+        <section class="home-welcome" data-testid="home-welcome">
+            <div>
+                <p class="home-eyebrow">Study mode</p>
+                <h1 class="home-title">Welcome back, @DisplayName</h1>
+                <p class="home-subtitle">Keep your momentum going with today&apos;s decks.</p>
+            </div>
+            <button
+                type="button"
+                class="home-primary-action"
+                data-testid="home-primary-study-action"
+                @onclick="() => OnPrimaryStudyAction.InvokeAsync(Model.PrimaryStudyAction)">
+                @Model.PrimaryStudyAction.Label
+            </button>
+        </section>
+
+        <section class="home-section" data-testid="home-quick-stats">
+            <header class="home-section__header">
+                <h2>Quick stats</h2>
+            </header>
+            @RenderQuickStats()
+        </section>
+
+        <section class="home-section" data-testid="home-recent-decks">
+            <header class="home-section__header">
+                <h2>Recent decks</h2>
+            </header>
+            @RenderDeckSection(Model.RecentDecksState, Model.RecentDecks, "recent-decks")
+        </section>
+
+        <section class="home-section" data-testid="home-pinned-decks">
+            <header class="home-section__header">
+                <h2>Pinned decks</h2>
+            </header>
+            @RenderDeckSection(Model.PinnedDecksState, Model.PinnedDecks, "pinned-decks")
+        </section>
+    </main>
+</div>
+
+@code {
+    [Parameter]
+    public HomeDashboardViewModel Model { get; set; } = new(
+        Profile: new LearnerProfileSummaryViewModel(null, "Learner", null),
+        QuickStats: Array.Empty<QuickStatMetricViewModel>(),
+        RecentDecks: Array.Empty<StudyDeckSummaryViewModel>(),
+        PinnedDecks: Array.Empty<StudyDeckSummaryViewModel>(),
+        PrimaryStudyAction: new HomePrimaryAction("study-now", "Start studying", "/study"),
+        Mode: LayoutMode.DesktopHorizontal,
+        IsAdaptiveFallbackActive: false,
+        QuickStatsState: SectionDataState.Loading,
+        RecentDecksState: SectionDataState.Loading,
+        PinnedDecksState: SectionDataState.Loading,
+        LastUpdatedUtc: DateTimeOffset.UtcNow);
+
+    [Parameter]
+    public EventCallback<HomePrimaryAction> OnPrimaryStudyAction { get; set; }
+
+    [Parameter]
+    public EventCallback<DeckPrimaryAction> OnDeckAction { get; set; }
+
+    private string DisplayName => string.IsNullOrWhiteSpace(Model.Profile.DisplayName)
+        ? Model.Profile.GreetingFallback
+        : Model.Profile.DisplayName;
+
+    private static IReadOnlyList<HomeNavItemViewModel> NavItems { get; } =
+    [
+        new HomeNavItemViewModel("home", "Home"),
+        new HomeNavItemViewModel("review", "Review"),
+        new HomeNavItemViewModel("decks", "Decks")
+    ];
+
+    private RenderFragment RenderQuickStats() => builder =>
+    {
+        if (Model.QuickStatsState == SectionDataState.Loading)
+        {
+            builder.OpenElement(0, "p");
+            builder.AddAttribute(1, "class", "home-state-message");
+            builder.AddAttribute(2, "data-testid", "home-state-loading-quick-stats");
+            builder.AddContent(3, "Loading quick stats...");
+            builder.CloseElement();
+            return;
+        }
+
+        if (Model.QuickStatsState == SectionDataState.Empty)
+        {
+            builder.OpenElement(10, "p");
+            builder.AddAttribute(11, "class", "home-state-message");
+            builder.AddAttribute(12, "data-testid", "home-state-empty-quick-stats");
+            builder.AddContent(13, "No quick stats available yet.");
+            builder.CloseElement();
+            return;
+        }
+
+        if (Model.QuickStatsState == SectionDataState.MissingData)
+        {
+            builder.OpenElement(20, "p");
+            builder.AddAttribute(21, "class", "home-state-message");
+            builder.AddAttribute(22, "data-testid", "home-state-missing-quick-stats");
+            builder.AddContent(23, "Quick stats are temporarily unavailable.");
+            builder.CloseElement();
+            return;
+        }
+
+        builder.OpenElement(30, "div");
+        builder.AddAttribute(31, "class", "home-quick-stats-grid");
+
+        var seq = 32;
+        foreach (var metric in Model.QuickStats)
+        {
+            builder.OpenComponent<QuickStatTile>(seq++);
+            builder.AddAttribute(seq++, nameof(QuickStatTile.Metric), metric);
+            builder.CloseComponent();
+        }
+
+        builder.CloseElement();
+    };
+
+    private RenderFragment RenderDeckSection(
+        SectionDataState state,
+        IReadOnlyList<StudyDeckSummaryViewModel> decks,
+        string sectionId) => builder =>
+    {
+        if (state == SectionDataState.Loading)
+        {
+            builder.OpenElement(0, "p");
+            builder.AddAttribute(1, "class", "home-state-message");
+            builder.AddAttribute(2, "data-testid", $"home-state-loading-{sectionId}");
+            builder.AddContent(3, "Loading decks...");
+            builder.CloseElement();
+            return;
+        }
+
+        if (state == SectionDataState.Empty)
+        {
+            builder.OpenElement(10, "p");
+            builder.AddAttribute(11, "class", "home-state-message");
+            builder.AddAttribute(12, "data-testid", $"home-state-empty-{sectionId}");
+            builder.AddContent(13, "No decks available.");
+            builder.CloseElement();
+            return;
+        }
+
+        if (state == SectionDataState.MissingData)
+        {
+            builder.OpenElement(20, "p");
+            builder.AddAttribute(21, "class", "home-state-message");
+            builder.AddAttribute(22, "data-testid", $"home-state-missing-{sectionId}");
+            builder.AddContent(23, "Deck metadata is temporarily unavailable.");
+            builder.CloseElement();
+            return;
+        }
+
+        builder.OpenElement(30, "div");
+        builder.AddAttribute(31, "class", "home-deck-grid");
+
+        var seq = 32;
+        foreach (var deck in decks)
+        {
+            builder.OpenComponent<DeckCard>(seq++);
+            builder.AddAttribute(seq++, nameof(DeckCard.Model), deck);
+            builder.AddAttribute(seq++, nameof(DeckCard.OnAction), EventCallback.Factory.Create<DeckPrimaryAction>(this, HandleDeckActionAsync));
+            builder.CloseComponent();
+        }
+
+        builder.CloseElement();
+    };
+
+    private Task HandleDeckActionAsync(DeckPrimaryAction action) => OnDeckAction.InvokeAsync(action);
+
+    private Task HandleNavItemSelectedAsync(HomeNavItemViewModel item)
+    {
+        if (string.Equals(item.ItemId, "home", StringComparison.OrdinalIgnoreCase))
+        {
+            return Task.CompletedTask;
+        }
+
+        var targetAction = new HomePrimaryAction(item.ItemId, item.Label, $"/{item.ItemId}");
+        return OnPrimaryStudyAction.InvokeAsync(targetAction);
+    }
+}

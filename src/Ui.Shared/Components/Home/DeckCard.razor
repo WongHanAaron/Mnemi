@@ -1,0 +1,66 @@
+@using Mnemi.Ui.Shared.Models.Home
+
+<article class="home-deck-card" data-testid="deck-card-@SafeDeckId">
+    <div class="home-deck-card__cover" aria-hidden="true">
+        @if (string.IsNullOrWhiteSpace(Model.ArtworkToken))
+        {
+            <span class="home-deck-card__cover-fallback">No Art</span>
+        }
+        else
+        {
+            <span class="home-deck-card__cover-token">@Model.ArtworkToken</span>
+        }
+    </div>
+
+    <div class="home-deck-card__content">
+        <p class="home-deck-card__title">@DisplayTitle</p>
+        <p class="home-deck-card__subtitle">@DisplaySubtitle</p>
+
+        <div class="home-deck-card__meta">
+            <span class="home-deck-card__status">@DisplayStatus</span>
+            <span class="home-deck-card__progress">@DisplayProgress</span>
+        </div>
+
+        <button
+            type="button"
+            class="home-deck-card__action"
+            data-testid="deck-card-action-@SafeDeckId"
+            @onclick="HandleActionAsync">
+            @ActionLabel
+        </button>
+    </div>
+</article>
+
+@code {
+    [Parameter]
+    public StudyDeckSummaryViewModel Model { get; set; } = new(
+        DeckId: "deck",
+        Title: "Untitled deck",
+        Subtitle: null,
+        ProgressPercent: null,
+        StatusLabel: null,
+        ArtworkToken: null,
+        DueCount: null,
+        IsPinned: false,
+        PrimaryAction: new DeckPrimaryAction("open", "Open", "deck"),
+        State: SectionDataState.MissingData);
+
+    [Parameter]
+    public EventCallback<DeckPrimaryAction> OnAction { get; set; }
+
+    private string DisplayTitle => string.IsNullOrWhiteSpace(Model.Title) ? "Untitled deck" : Model.Title;
+
+    private string DisplaySubtitle => string.IsNullOrWhiteSpace(Model.Subtitle) ? "No subtitle available" : Model.Subtitle;
+
+    private string DisplayStatus => string.IsNullOrWhiteSpace(Model.StatusLabel) ? "Status unavailable" : Model.StatusLabel;
+
+    private string DisplayProgress => Model.ProgressPercent is null ? "Progress unavailable" : $"{Model.ProgressPercent}% complete";
+
+    private string ActionLabel => string.IsNullOrWhiteSpace(Model.PrimaryAction.Label) ? "Open" : Model.PrimaryAction.Label;
+
+    private string SafeDeckId => string.IsNullOrWhiteSpace(Model.DeckId)
+        ? "unknown"
+        : new string(Model.DeckId.Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
+
+    private Task HandleActionAsync() => OnAction.InvokeAsync(Model.PrimaryAction);
+}

@@ -1,0 +1,30 @@
+@using Mnemi.Ui.Shared.Models.Home
+
+<article class="home-quick-stat home-quick-stat--@TrendClass" data-testid="quick-stat-@Metric.MetricId">
+    <p class="home-quick-stat__label">@Metric.Label</p>
+    <p class="home-quick-stat__value">@DisplayValue</p>
+    @if (!string.IsNullOrWhiteSpace(Metric.TrendText) && Metric.State == SectionDataState.Populated)
+    {
+        <p class="home-quick-stat__trend">@Metric.TrendText</p>
+    }
+</article>
+
+@code {
+    [Parameter]
+    public QuickStatMetricViewModel Metric { get; set; } = new(
+        MetricId: "metric",
+        Label: "Metric",
+        ValueText: "0",
+        TrendText: null,
+        TrendDirection: MetricTrendDirection.Unknown,
+        State: SectionDataState.MissingData);
+
+    private string DisplayValue => Metric.State == SectionDataState.MissingData ? "Unavailable" : Metric.ValueText;
+
+    private string TrendClass => Metric.TrendDirection switch
+    {
+        MetricTrendDirection.Up => "up",
+        MetricTrendDirection.Down => "down",
+        _ => "flat"
+    };
+}

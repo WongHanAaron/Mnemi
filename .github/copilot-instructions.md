@@ -33,7 +33,7 @@ Use these instructions when making project changes, adding new features, or gene
 Future expansion should preserve a shared core that can be used across web and Blazor platforms.
 
 <!-- SPECKIT START -->
-Feature plan: specs/001-domain-models-and-parsing/plan.md
+Feature plan: specs/002-home-view-blueprint-theme/plan.md
 
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan

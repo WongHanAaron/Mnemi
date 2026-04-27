@@ -1,0 +1,31 @@
+@using Mnemi.Ui.Shared.Models.Home
+
+<aside class="home-sidenav" data-testid="home-sidenav" aria-label="Primary">
+    <ul class="home-sidenav__list">
+        @foreach (var item in Items)
+        {
+            var isActive = string.Equals(item.ItemId, ActiveItemId, StringComparison.OrdinalIgnoreCase);
+            <li class="home-sidenav__item">
+                <button
+                    type="button"
+                    class="home-sidenav__button @(isActive ? "is-active" : string.Empty)"
+                    data-testid="home-sidenav-item-@item.ItemId"
+                    aria-current="@(isActive ? "page" : null)"
+                    @onclick="() => OnNavigate.InvokeAsync(item)">
+                    @item.Label
+                </button>
+            </li>
+        }
+    </ul>
+</aside>
+
+@code {
+    [Parameter]
+    public IReadOnlyList<HomeNavItemViewModel> Items { get; set; } = Array.Empty<HomeNavItemViewModel>();
+
+    [Parameter]
+    public string ActiveItemId { get; set; } = "home";
+
+    [Parameter]
+    public EventCallback<HomeNavItemViewModel> OnNavigate { get; set; }
+}
