@@ -15,8 +15,4 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="Styles\home-blueprint-theme.css" Link="wwwroot\Styles\home-blueprint-theme.css" />
-  </ItemGroup>
-
 </Project>
