@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsTestProject>true</IsTestProject>
+    <RootNamespace>Mnemi.Domain.Tests</RootNamespace>
+    <AssemblyName>Mnemi.Domain.Tests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

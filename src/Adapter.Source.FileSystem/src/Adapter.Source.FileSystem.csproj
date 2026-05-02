@@ -1,16 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-	<RootNamespace>Mnemi.Application</RootNamespace>
-	<AssemblyName>Mnemi.Application</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RootNamespace>Mnemi.Adapter.Source.FileSystem</RootNamespace>
+    <AssemblyName>Mnemi.Adapter.Source.FileSystem</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="../../Application/Application.csproj" />
   </ItemGroup>
 
 </Project>
