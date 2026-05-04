@@ -1,0 +1,29 @@
+@page "/login"
+@using Mnemi.Ui.Shared.Components.Auth
+@using Mnemi.Ui.Shared.Services
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>Sign In - Mnemi</PageTitle>
+
+<div class="login-page">
+    <LoginButton ReturnUrl="@ReturnUrl" />
+</div>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthService.GetCurrentAuthStateAsync();
+        if (state.IsAuthenticated)
+        {
+            var destination = !string.IsNullOrEmpty(ReturnUrl)
+                ? ReturnUrl
+                : "/";
+            Navigation.NavigateTo(destination);
+        }
+    }
+}

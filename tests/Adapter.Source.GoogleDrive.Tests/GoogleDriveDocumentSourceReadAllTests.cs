@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using Mnemi.Application.Ports;
 using Moq;
 using Xunit;
-using Application.Ports.Source;
-using Mnemi.Application.Source;
 using Mnemi.Application.Ports.Source;
 using Mnemi.Application.Ports.Source.Exceptions;
 

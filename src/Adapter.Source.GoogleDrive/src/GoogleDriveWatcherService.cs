@@ -1,9 +1,6 @@
-using System;
-using Application.Ports.Source;
 using Mnemi.Application.Ports;
-using Mnemi.Application.Ports.Exceptions;
 using Mnemi.Application.Ports.Source;
-using Mnemi.Application.Source;
+using Mnemi.Application.Ports.Source.Exceptions;
 
 namespace Mnemi.Adapter.Source.GoogleDrive;
 
@@ -16,7 +13,7 @@ public class GoogleDriveWatcherService
     private readonly string _folderId;
     private readonly string _sourceId;
     private readonly int _pollingIntervalMs;
-    private Dictionary<string, DateTime>? _previousSnapshot;
+    private Dictionary<string, DateTimeOffset>? _previousSnapshot;
 
     public GoogleDriveWatcherService(
         IGoogleDriveClient client,
@@ -45,10 +42,10 @@ public class GoogleDriveWatcherService
         while (!cancellationToken.IsCancellationRequested)
         {
             // Get current snapshot
-            var currentSnapshot = new Dictionary<string, DateTime>();
+            var currentSnapshot = new Dictionary<string, DateTimeOffset>();
             await foreach (var file in _client.ListFilesInFolderAsync(_folderId, cancellationToken))
             {
-                currentSnapshot[file.Id] = file.ModifiedTime?.ToUniversalTime() ?? DateTime.UtcNow;
+                currentSnapshot[file.Id] = file.ModifiedTimeDateTimeOffset ?? DateTimeOffset.MaxValue;
             }
 
             // Compare with previous snapshot

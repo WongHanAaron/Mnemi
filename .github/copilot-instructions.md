@@ -33,7 +33,7 @@ Use these instructions when making project changes, adding new features, or gene
 Future expansion should preserve a shared core that can be used across web and Blazor platforms.
 
 <!-- SPECKIT START -->
-Feature plan: specs/004-file-sync-interfaces/plan.md
+Feature plan: specs/006-oauth-user-config/plan.md
 
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan

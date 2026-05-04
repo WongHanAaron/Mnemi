@@ -1,0 +1,267 @@
+/* ============================
+   Authentication UI Components
+   ============================ */
+
+:root {
+    --auth-bg: radial-gradient(circle at 12% 20%, #0f2d45 0%, #082033 34%, #061625 100%);
+    --auth-surface: #102b40;
+    --auth-surface-soft: #17374f;
+    --auth-border: rgba(255, 255, 255, 0.14);
+    --auth-text: #f7fafc;
+    --auth-muted: #a9c5d9;
+    --auth-accent: #efc15a;
+    --auth-error: #f2777b;
+    --auth-shadow: 0 16px 40px rgba(1, 14, 25, 0.35);
+    --auth-radius: 1.2rem;
+}
+
+/* ---------- Login Page ---------- */
+
+.login-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: var(--auth-bg);
+    font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+    padding: 1.5rem;
+}
+
+.auth-login-panel {
+    width: 100%;
+    max-width: 26rem;
+}
+
+.auth-login-card {
+    background: var(--auth-surface);
+    border: 1px solid var(--auth-border);
+    border-radius: var(--auth-radius);
+    padding: 2.5rem 2rem;
+    box-shadow: var(--auth-shadow);
+}
+
+.auth-login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-login-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--auth-text);
+    margin: 0 0 0.5rem;
+}
+
+.auth-login-subtitle {
+    font-size: 0.95rem;
+    color: var(--auth-muted);
+    margin: 0;
+}
+
+/* ---------- Provider Buttons ---------- */
+
+.auth-login-providers {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.auth-provider-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+    border: 1px solid var(--auth-border);
+    border-radius: var(--auth-radius);
+    background: var(--auth-surface-soft);
+    color: var(--auth-text);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.auth-provider-btn:hover:not(:disabled) {
+    background: #1e4260;
+    border-color: var(--auth-accent);
+}
+
+.auth-provider-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.auth-provider-icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.auth-provider-label {
+    flex: 1;
+    text-align: center;
+}
+
+/* ---------- Error Message ---------- */
+
+.auth-login-error {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: rgba(242, 119, 123, 0.12);
+    border: 1px solid var(--auth-error);
+    border-radius: 0.65rem;
+    color: var(--auth-error);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* ---------- User Menu ---------- */
+
+.auth-user-menu {
+    position: relative;
+}
+
+.auth-user-menu__trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--auth-border);
+    border-radius: 2rem;
+    background: var(--auth-surface);
+    color: var(--auth-text);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+}
+
+.auth-user-menu__trigger:hover {
+    border-color: var(--auth-accent);
+}
+
+.auth-user-menu__avatar {
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.auth-user-menu__avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--auth-accent);
+    color: #061625;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.auth-user-menu__name {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.auth-user-menu__chevron {
+    transition: transform 0.2s;
+}
+
+.auth-user-menu__chevron--open {
+    transform: rotate(180deg);
+}
+
+/* ---------- Dropdown ---------- */
+
+.auth-user-menu__dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    min-width: 14rem;
+    background: var(--auth-surface);
+    border: 1px solid var(--auth-border);
+    border-radius: var(--auth-radius);
+    box-shadow: var(--auth-shadow);
+    z-index: 100;
+    overflow: hidden;
+}
+
+.auth-user-menu__dropdown-header {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--auth-border);
+}
+
+.auth-user-menu__dropdown-email {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--auth-muted);
+    word-break: break-all;
+}
+
+.auth-user-menu__dropdown-actions {
+    padding: 0.5rem;
+    display: grid;
+    gap: 0.25rem;
+}
+
+.auth-user-menu__dropdown-btn {
+    display: block;
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: none;
+    border-radius: 0.5rem;
+    background: transparent;
+    color: var(--auth-text);
+    font-size: 0.9rem;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.auth-user-menu__dropdown-btn:hover:not(:disabled) {
+    background: var(--auth-surface-soft);
+}
+
+.auth-user-menu__dropdown-btn--danger {
+    color: var(--auth-error);
+}
+
+.auth-user-menu__dropdown-btn--danger:hover {
+    background: rgba(242, 119, 123, 0.12);
+}
+
+.auth-user-menu__dropdown-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ---------- Auth Guard ---------- */
+
+.auth-guard-loading,
+.auth-guard-redirect {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+    color: var(--auth-muted);
+    font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+}
+
+.auth-guard-login-link {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.7rem 1.5rem;
+    background: var(--auth-accent);
+    color: #061625;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.auth-guard-login-link:hover {
+    opacity: 0.85;
+}

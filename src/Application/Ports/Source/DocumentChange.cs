@@ -8,22 +8,9 @@ namespace Mnemi.Application.Ports.Source;
 /// document content (if available). For Deleted events, the DocumentContent will have an empty Content field.
 /// </remarks>
 public record DocumentChange(
-    /// <summary>
-    /// The type of change that occurred (Created, Modified, or Deleted).
-    /// </summary>
     DocumentChangeType ChangeType,
-
-    /// <summary>
-    /// The document involved in this change, including its full content.
-    /// For Created and Modified events, Content is populated.
-    /// For Deleted events, Content is empty but Id is preserved.
-    /// </summary>
     DocumentContent Document,
-
-    /// <summary>
-    /// The UTC timestamp indicating when this change was detected by the source.
-    /// </summary>
-    DateTime DetectedAt
+    DateTimeOffset DetectedAt
 )
 {
     /// <summary>

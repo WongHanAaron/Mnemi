@@ -1,0 +1,126 @@
+@using Mnemi.Ui.Shared.Services
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+<div class="auth-user-menu" data-testid="auth-user-menu">
+    <button
+        type="button"
+        class="auth-user-menu__trigger"
+        data-testid="auth-user-menu-trigger"
+        @onclick="ToggleMenu"
+        aria-haspopup="true"
+        aria-expanded="@_isOpen">
+
+        @if (!string.IsNullOrEmpty(_authState?.AvatarUrl))
+        {
+            <img
+                class="auth-user-menu__avatar"
+                src="@_authState.AvatarUrl"
+                alt="User avatar"
+                width="32"
+                height="32" />
+        }
+        else
+        {
+            <span class="auth-user-menu__avatar-fallback">
+                @GetInitials()
+            </span>
+        }
+
+        <span class="auth-user-menu__name">@_authState?.DisplayName</span>
+        <svg class="auth-user-menu__chevron @(_isOpen ? "auth-user-menu__chevron--open" : "")"
+             viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+            <path d="M7 10l5 5 5-5z" fill="currentColor"/>
+        </svg>
+    </button>
+
+    @if (_isOpen)
+    {
+        <div class="auth-user-menu__dropdown" data-testid="auth-user-menu-dropdown">
+            <div class="auth-user-menu__dropdown-header">
+                <span class="auth-user-menu__dropdown-email">@_authState?.Email</span>
+            </div>
+
+            <div class="auth-user-menu__dropdown-actions">
+                <button
+                    type="button"
+                    class="auth-user-menu__dropdown-btn"
+                    data-testid="auth-user-menu-settings"
+                    @onclick="() => NavigateToSettings()">
+                    Account Settings
+                </button>
+
+                <button
+                    type="button"
+                    class="auth-user-menu__dropdown-btn auth-user-menu__dropdown-btn--danger"
+                    data-testid="auth-user-menu-signout"
+                    disabled="@_isSigningOut"
+                    @onclick="HandleSignOutAsync">
+                    @(_isSigningOut ? "Signing out..." : "Sign Out")
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private AuthState? _authState;
+    private bool _isOpen;
+    private bool _isSigningOut;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _authState = await AuthService.GetCurrentAuthStateAsync();
+        AuthService.AuthStateChanged += HandleAuthStateChanged;
+    }
+
+    public void Dispose()
+    {
+        AuthService.AuthStateChanged -= HandleAuthStateChanged;
+    }
+
+    private void ToggleMenu()
+    {
+        _isOpen = !_isOpen;
+    }
+
+    private async Task HandleSignOutAsync()
+    {
+        _isSigningOut = true;
+        StateHasChanged();
+
+        var result = await AuthService.LogoutAsync();
+
+        _isSigningOut = false;
+        _isOpen = false;
+
+        if (result.Success)
+        {
+            Navigation.NavigateTo("/login");
+        }
+    }
+
+    private void HandleAuthStateChanged(AuthState state)
+    {
+        _authState = state;
+        _isOpen = false;
+        StateHasChanged();
+    }
+
+    private void NavigateToSettings()
+    {
+        _isOpen = false;
+        Navigation.NavigateTo("/account");
+    }
+
+    private string GetInitials()
+    {
+        if (string.IsNullOrEmpty(_authState?.DisplayName))
+            return "?";
+
+        var parts = _authState.DisplayName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 0) return "?";
+        if (parts.Length == 1) return parts[0][..1].ToUpper();
+        return $"{parts[0][..1]}{parts[^1][..1]}".ToUpper();
+    }
+}

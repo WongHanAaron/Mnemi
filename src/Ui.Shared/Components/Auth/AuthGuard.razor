@@ -1,0 +1,61 @@
+@using Mnemi.Ui.Shared.Services
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+@if (_isCheckingAuth)
+{
+    <div class="auth-guard-loading" data-testid="auth-guard-loading">
+        <p>Checking authentication...</p>
+    </div>
+}
+else if (_isAuthenticated)
+{
+    @ChildContent
+}
+else
+{
+    <div class="auth-guard-redirect" data-testid="auth-guard-redirect">
+        <p>You need to sign in to access this page.</p>
+        <a href="@RedirectTo" class="auth-guard-login-link" data-testid="auth-guard-login-link">
+            Sign in
+        </a>
+    </div>
+}
+
+@code {
+    private bool _isCheckingAuth = true;
+    private bool _isAuthenticated;
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string RedirectTo { get; set; } = "/login";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var state = await AuthService.GetCurrentAuthStateAsync();
+            _isAuthenticated = state.IsAuthenticated;
+
+            if (!_isAuthenticated)
+            {
+                var returnUrl = Navigation.ToBaseRelativePath(Navigation.Uri);
+                if (!string.IsNullOrEmpty(returnUrl) && returnUrl != "/")
+                {
+                    Navigation.NavigateTo($"{RedirectTo}?returnUrl={Uri.EscapeDataString(returnUrl)}");
+                }
+                else
+                {
+                    Navigation.NavigateTo(RedirectTo);
+                }
+            }
+        }
+        finally
+        {
+            _isCheckingAuth = false;
+            StateHasChanged();
+        }
+    }
+}

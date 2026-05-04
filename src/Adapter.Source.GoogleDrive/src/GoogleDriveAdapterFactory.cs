@@ -57,9 +57,6 @@ public static class GoogleDriveAdapterFactory
     /// </summary>
     /// <param name="config">Full configuration object</param>
     /// <returns>Configured IDocumentSource instance</returns>
-    /// <exception cref="DocumentSourceConfigurationException">
-    /// Thrown if configuration is invalid
-    /// </exception>
     public static IDocumentSource CreateFromConfig(DocumentSourceConfig config)
     {
         return new GoogleDriveDocumentSource(config);
