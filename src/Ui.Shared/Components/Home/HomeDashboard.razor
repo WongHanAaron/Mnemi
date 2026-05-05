@@ -1,7 +1,7 @@
 @using Mnemi.Ui.Shared.Models.Home
 
 <div class="home-shell @(Model.IsAdaptiveFallbackActive ? "home-shell--adaptive" : string.Empty)" data-testid="home-shell">
-    <HomeSideNav Items="NavItems" ActiveItemId="home" OnNavigate="HandleNavItemSelectedAsync" />
+    @* HomeSideNav removed — primary navigation is now in the shared AppSidebar (specs/007-sidebar-layout) *@
 
     <main class="home-main" aria-live="polite">
         <section class="home-welcome" data-testid="home-welcome">

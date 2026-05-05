@@ -1,0 +1,27 @@
+@namespace Mnemi.Ui.Shared.Components.Layout
+
+@* Quick Links — always visible, no collapsible wrapper *@
+<div class="sidebar-quick-links" data-testid="sidebar-quick-links">
+    @foreach (var item in QuickLinks)
+    {
+        <Mnemi.Ui.Shared.Components.Layout.SidebarNavLink
+            Id="@item.Id"
+            Label="@item.Label"
+            Href="@item.Href"
+            IconKind="@item.IconKind"
+            IsActive="@(string.Equals(item.Href, ActiveRoute, StringComparison.OrdinalIgnoreCase))" />
+    }
+</div>
+
+@code {
+    /// <summary>The current active route, used to highlight the active link.</summary>
+    [Parameter]
+    public string ActiveRoute { get; set; } = "/";
+
+    private static readonly IReadOnlyList<Models.SidebarNavItem> QuickLinks = new[]
+    {
+        new Models.SidebarNavItem("home", "Home", "/", "home"),
+        new Models.SidebarNavItem("review", "Review", "/review", "review"),
+        new Models.SidebarNavItem("decks", "Decks", "/decks", "decks"),
+    };
+}

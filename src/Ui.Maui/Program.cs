@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Mnemi.Application.Home;
+using Mnemi.Ui.Shared.Ports;
 using Mnemi.Ui.Maui.Services;
 
 namespace Mnemi.Ui.Maui;
@@ -12,6 +13,10 @@ public class Program
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddScoped<IHomeDashboardService, HomeDashboardService>();
+
+        // Register viewport/viewstate service (MAUI window size detection)
+        serviceCollection.AddScoped<IViewStateService, MauiViewStateService>();
+
         Services = serviceCollection.BuildServiceProvider();
     }
 }

@@ -1,8 +1,39 @@
 @inherits LayoutComponentBase
+@inject NavigationManager Navigation
+@using Mnemi.Ui.Shared.Components.Layout
+@using Mnemi.Ui.Shared.Models
+
+<link rel="stylesheet" href="_content/Ui.Shared/Styles/sidebar-layout.css?v=2026050409" />
 
 <div class="layout-shell">
-    <Mnemi.Ui.Web.Components.Layout.NavMenu />
-    <div class="layout-content">
+    <AppSidebar
+        ActiveRoute="@GetActiveRoute()"
+        PinnedDecks="@GetSamplePinnedDecks()"
+        OnDeckSelected="@HandleDeckSelected" />
+    <main class="layout-content" aria-live="polite">
         @Body
-    </div>
+    </main>
 </div>
+
+@code {
+    private string GetActiveRoute()
+    {
+        var uri = new Uri(Navigation.Uri);
+        return uri.AbsolutePath;
+    }
+
+    private static IReadOnlyList<PinnedDeckItem> GetSamplePinnedDecks()
+    {
+        return new[]
+        {
+            new PinnedDeckItem("1", "Spanish Verbs", "/review/deck1"),
+            new PinnedDeckItem("2", "World Capitals", "/review/deck2"),
+            new PinnedDeckItem("3", "Periodic Table", "/review/deck3"),
+        };
+    }
+
+    private void HandleDeckSelected(PinnedDeckItem deck)
+    {
+        Navigation.NavigateTo(deck.Href);
+    }
+}

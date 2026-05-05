@@ -1,0 +1,61 @@
+@namespace Mnemi.Ui.Shared.Components.Layout
+
+<a href="@Href"
+   class="sidebar-nav-link @(IsActive ? "sidebar-nav-link--active" : "")"
+   data-testid="sidebar-nav-link-@Id"
+   aria-current="@(IsActive ? "page" : null)">
+    <svg class="sidebar-nav-link__icon"
+         xmlns="http://www.w3.org/2000/svg"
+         viewBox="0 0 24 24"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="2"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         aria-hidden="true">
+        @switch (IconKind)
+        {
+            case "home":
+                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+                break;
+            case "review":
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                break;
+            case "decks":
+                <rect x="3" y="3" width="7" height="9" rx="1" />
+                <rect x="14" y="3" width="7" height="5" rx="1" />
+                <rect x="14" y="12" width="7" height="9" rx="1" />
+                break;
+            default:
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="16" />
+                <line x1="8" y1="12" x2="16" y2="12" />
+                break;
+        }
+    </svg>
+    <span>@Label</span>
+</a>
+
+@code {
+    /// <summary>Unique identifier for testing.</summary>
+    [Parameter]
+    public string Id { get; set; } = "";
+
+    /// <summary>The display label.</summary>
+    [Parameter]
+    public string Label { get; set; } = "";
+
+    /// <summary>The navigation target URL.</summary>
+    [Parameter]
+    public string Href { get; set; } = "/";
+
+    /// <summary>The icon kind: "home", "review", "decks", or empty for default.</summary>
+    [Parameter]
+    public string IconKind { get; set; } = "";
+
+    /// <summary>Whether this link corresponds to the current page.</summary>
+    [Parameter]
+    public bool IsActive { get; set; }
+}

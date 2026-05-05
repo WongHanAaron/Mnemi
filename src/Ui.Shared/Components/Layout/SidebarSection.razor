@@ -1,0 +1,92 @@
+@namespace Mnemi.Ui.Shared.Components.Layout
+
+<div class="sidebar-section" data-testid="sidebar-section-@SectionId">
+    <div class="sidebar-section__header"
+         role="button"
+         aria-expanded="@IsExpanded.ToString().ToLowerInvariant()"
+         aria-controls="sidebar-section-content-@SectionId"
+         data-testid="sidebar-section-header-@SectionId"
+         @onclick="Toggle">
+        @if (PinIcon)
+        {
+            @* Pin icon for pinned decks *@
+            <svg class="sidebar-section__pinicon @(IsExpanded ? "sidebar-section__pinicon--open" : "")"
+                 xmlns="http://www.w3.org/2000/svg"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2"
+                 stroke-linecap="round"
+                 stroke-linejoin="round"
+                 aria-hidden="true">
+                <line x1="12" y1="17" x2="12" y2="22" />
+                <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z" />
+            </svg>
+        }
+        else
+        {
+            <svg class="sidebar-section__chevron @(IsExpanded ? "sidebar-section__chevron--open" : "")"
+                 xmlns="http://www.w3.org/2000/svg"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2"
+                 stroke-linecap="round"
+                 stroke-linejoin="round"
+                 aria-hidden="true">
+                <polyline points="9 18 15 12 9 6" />
+            </svg>
+        }
+        <span>@Label</span>
+    </div>
+    <div id="sidebar-section-content-@SectionId"
+         class="sidebar-section__content @(IsExpanded ? "sidebar-section__content--open" : "")"
+         data-testid="sidebar-section-content-@SectionId">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    /// <summary>Unique identifier for this section (for aria attributes).</summary>
+    [Parameter]
+    public string SectionId { get; set; } = "section";
+
+    /// <summary>The label displayed in the section header.</summary>
+    [Parameter]
+    public string Label { get; set; } = "Section";
+
+    /// <summary>Whether to show a pin icon instead of the chevron toggle.</summary>
+    [Parameter]
+    public bool PinIcon { get; set; }
+
+    /// <summary>Whether the section starts expanded.</summary>
+    [Parameter]
+    public bool InitiallyExpanded { get; set; } = true;
+
+    /// <summary>The content inside the collapsible section.</summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private bool _isExpanded = true;
+    private bool IsExpanded
+    {
+        get => _isExpanded;
+        set
+        {
+            if (_isExpanded != value)
+            {
+                _isExpanded = value;
+            }
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        _isExpanded = InitiallyExpanded;
+    }
+
+    private void Toggle()
+    {
+        IsExpanded = !IsExpanded;
+    }
+}

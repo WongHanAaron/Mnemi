@@ -1,0 +1,50 @@
+@namespace Mnemi.Ui.Shared.Components.Layout
+@using Mnemi.Ui.Shared.Models
+
+<Mnemi.Ui.Shared.Components.Layout.SidebarSection SectionId="pinned-decks" Label="Pinned Decks" InitiallyExpanded="true" PinIcon="true">
+    @if (PinnedDecks is null || PinnedDecks.Count == 0)
+    {
+        <div class="pinned-decks__empty" data-testid="pinned-decks-empty">
+            No pinned decks
+        </div>
+    }
+    else
+    {
+        <ul class="pinned-decks__list" data-testid="pinned-decks-list">
+            @foreach (var deck in PinnedDecks)
+            {
+                <li class="pinned-decks__item"
+                    data-testid="pinned-deck-@deck.Id"
+                    title="@deck.Name"
+                    @onclick="() => OnDeckSelected.InvokeAsync(deck)"
+                    @onclick:preventDefault>
+                    <span class="pinned-decks__icon" aria-hidden="true">@GetInitials(deck.Name)</span>
+                    <span class="pinned-decks__name">@deck.Name</span>
+                </li>
+            }
+        </ul>
+    }
+</Mnemi.Ui.Shared.Components.Layout.SidebarSection>
+
+@code {
+    /// <summary>The user's pinned decks, or empty if none.</summary>
+    [Parameter]
+    public IReadOnlyList<PinnedDeckItem> PinnedDecks { get; set; } = Array.Empty<PinnedDeckItem>();
+
+    /// <summary>Callback when a pinned deck is clicked.</summary>
+    [Parameter]
+    public EventCallback<PinnedDeckItem> OnDeckSelected { get; set; }
+
+    private static string GetInitials(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return "?";
+
+        // Take first letters of up to 2 words
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2)
+            return $"{parts[0][0]}{parts[^1][0]}".ToUpperInvariant();
+
+        return name[..Math.Min(2, name.Length)].ToUpperInvariant();
+    }
+}

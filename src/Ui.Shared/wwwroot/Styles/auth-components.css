@@ -23,7 +23,7 @@
     justify-content: center;
     min-height: 100vh;
     background: var(--auth-bg);
-    font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     padding: 1.5rem;
 }
 
@@ -247,7 +247,7 @@
     min-height: 60vh;
     text-align: center;
     color: var(--auth-muted);
-    font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .auth-guard-login-link {

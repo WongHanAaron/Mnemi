@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Mnemi.Application;
 using Mnemi.Application.Home;
+using Mnemi.Ui.Shared.Ports;
 using Mnemi.Ui.Shared.Services;
 using Mnemi.Ui.Web.Services;
 
@@ -21,6 +22,9 @@ public class Program
         // Register auth services
         builder.Services.AddScoped<WebAuthService>();
         builder.Services.AddScoped<IAuthService>(sp => sp.GetRequiredService<WebAuthService>());
+
+        // Register viewport/viewstate service (browser resize detection)
+        builder.Services.AddScoped<IViewStateService, WebViewStateService>();
 
         // Register web-specific service implementations
         builder.Services.AddScoped<HomeDashboardStubDataProvider>();

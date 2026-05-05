@@ -1,0 +1,91 @@
+@namespace Mnemi.Ui.Shared.Components.Layout
+@using Mnemi.Ui.Shared.Models
+@implements IDisposable
+@inject Mnemi.Ui.Shared.Ports.IViewStateService ViewStateService
+
+@* Toggle and backdrop are position:fixed, so they don't affect the CSS grid *@
+<button class="sidebar-toggle @(_sidebarOpen ? "sidebar-toggle--active" : "")"
+        data-testid="sidebar-toggle"
+        aria-label="@(_sidebarOpen ? "Close sidebar" : "Open sidebar")"
+        aria-expanded="@_sidebarOpen.ToString().ToLowerInvariant()"
+        @onclick="ToggleSidebar">
+    <span class="sidebar-toggle__icon">☰</span>
+</button>
+
+<div class="sidebar-backdrop @(_sidebarOpen ? "sidebar-backdrop--visible" : "")"
+     data-testid="sidebar-backdrop"
+     @onclick="CloseSidebar"
+     aria-hidden="true">
+</div>
+
+<aside class="app-sidebar @(_sidebarOpen ? "app-sidebar--open" : "")"
+       data-testid="sidebar"
+       role="navigation"
+       aria-label="Main navigation">
+    <div class="app-sidebar__header">
+        <Mnemi.Ui.Shared.Components.Layout.SidebarUserSection />
+    </div>
+
+    <nav class="app-sidebar__content">
+        <Mnemi.Ui.Shared.Components.Layout.SidebarQuickLinks ActiveRoute="@ActiveRoute" />
+
+        <Mnemi.Ui.Shared.Components.Layout.SidebarPinnedDecks
+            PinnedDecks="@PinnedDecks"
+            OnDeckSelected="@OnDeckSelected" />
+    </nav>
+</aside>
+
+@code {
+    /// <summary>The current route path, used to highlight the active quick link.</summary>
+    [Parameter]
+    public string ActiveRoute { get; set; } = "/";
+
+    /// <summary>The user's pinned flashcard decks, or empty if none.</summary>
+    [Parameter]
+    public IReadOnlyList<Models.PinnedDeckItem> PinnedDecks { get; set; } = Array.Empty<Models.PinnedDeckItem>();
+
+    /// <summary>Callback when a pinned deck is clicked.</summary>
+    [Parameter]
+    public EventCallback<Models.PinnedDeckItem> OnDeckSelected { get; set; }
+
+    private bool _sidebarOpen;
+    private ViewState _currentViewState;
+
+    protected override void OnInitialized()
+    {
+        _currentViewState = ViewStateService.Current;
+        ViewStateService.OnViewStateChanged += HandleViewStateChanged;
+    }
+
+    private void HandleViewStateChanged(ViewState newState)
+    {
+        _currentViewState = newState;
+        // Auto-close sidebar on phone when viewport changes
+        if (newState == ViewState.Phone)
+        {
+            _sidebarOpen = false;
+        }
+        else if (newState == ViewState.Desktop)
+        {
+            _sidebarOpen = true;
+        }
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void ToggleSidebar()
+    {
+        _sidebarOpen = !_sidebarOpen;
+    }
+
+    private void CloseSidebar()
+    {
+        _sidebarOpen = false;
+    }
+
+    public void Dispose()
+    {
+        ViewStateService.OnViewStateChanged -= HandleViewStateChanged;
+    }
+}
+
+
