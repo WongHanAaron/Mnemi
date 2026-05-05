@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Mnemi.Application;
 using Mnemi.Application.Home;
 using Mnemi.Ui.Shared.Ports;
@@ -10,11 +10,17 @@ namespace Mnemi.Ui.Web;
 
 public class Program
 {
-    public static async Task Main(string[] args)
+    public static void Main(string[] args)
     {
-        var builder = WebAssemblyHostBuilder.CreateDefault(args);
-        builder.RootComponents.Add<App>("#app");
-        builder.RootComponents.Add<HeadOutlet>("head::after");
+        var builder = WebApplication.CreateBuilder(args);
+        
+        // Add services to the container
+        builder.Services.AddRazorPages();
+        builder.Services.AddServerSideBlazor(options =>
+        {
+            options.DetailedErrors = true;
+        });
+        builder.Services.AddControllers();
 
         // Register application-layer abstractions (no host-specific implementations)
         builder.Services.AddApplicationServices();
@@ -30,6 +36,23 @@ public class Program
         builder.Services.AddScoped<HomeDashboardStubDataProvider>();
         builder.Services.AddScoped<IHomeDashboardService, HomeDashboardService>();
 
-        await builder.Build().RunAsync();
+        var app = builder.Build();
+
+        // Configure the HTTP request pipeline
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseExceptionHandler("/Error");
+            app.UseHsts();
+        }
+
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+        app.UseRouting();
+
+        app.MapControllers();
+        app.MapBlazorHub();
+        app.MapFallbackToPage("/_Host");
+
+        app.Run();
     }
 }
