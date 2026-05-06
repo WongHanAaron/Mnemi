@@ -1,21 +1,64 @@
 @inherits LayoutComponentBase
 @inject NavigationManager Navigation
+@inject Mnemi.Ui.Shared.Services.IAuthService AuthService
 @using Mnemi.Ui.Shared.Components.Layout
 @using Mnemi.Ui.Shared.Models
 
 <link rel="stylesheet" href="_content/Ui.Shared/Styles/sidebar-layout.css?v=2026050409" />
 
-<div class="layout-shell">
-    <AppSidebar
-        ActiveRoute="@GetActiveRoute()"
-        PinnedDecks="@GetSamplePinnedDecks()"
-        OnDeckSelected="@HandleDeckSelected" />
-    <main class="layout-content" aria-live="polite">
-        @Body
-    </main>
-</div>
+@if (_isCheckingAuth)
+{
+    <div class="auth-guard-loading" data-testid="auth-guard-loading">
+        <p>Checking authentication…</p>
+    </div>
+}
+else if (!_isAuthenticated)
+{
+    <div class="auth-guard-redirect" data-testid="auth-guard-redirect">
+        <p>Redirecting to sign in…</p>
+    </div>
+}
+else
+{
+    <div class="layout-shell">
+        <AppSidebar
+            ActiveRoute="@GetActiveRoute()"
+            PinnedDecks="@GetSamplePinnedDecks()"
+            OnDeckSelected="@HandleDeckSelected" />
+        <main class="layout-content" aria-live="polite">
+            @Body
+        </main>
+    </div>
+}
 
 @code {
+    private bool _isCheckingAuth = true;
+    private bool _isAuthenticated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var state = await AuthService.GetCurrentAuthStateAsync();
+            _isAuthenticated = state.IsAuthenticated;
+
+            if (!_isAuthenticated)
+            {
+                var returnUrl = Navigation.ToBaseRelativePath(Navigation.Uri);
+                var loginUrl = "/login";
+                if (!string.IsNullOrEmpty(returnUrl) && returnUrl != "/")
+                {
+                    loginUrl += $"?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                }
+                Navigation.NavigateTo(loginUrl, forceLoad: true);
+            }
+        }
+        finally
+        {
+            _isCheckingAuth = false;
+        }
+    }
+
     private string GetActiveRoute()
     {
         var uri = new Uri(Navigation.Uri);

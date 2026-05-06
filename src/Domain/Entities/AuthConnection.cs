@@ -187,6 +187,15 @@ public class AuthConnection : Entity
     }
 
     /// <summary>
+    /// Updates the stored tokens and scopes.
+    /// </summary>
+    public void UpdateTokens(string encryptedAccessToken, string? encryptedRefreshToken, DateTime? expiresAt, string scopes)
+    {
+        UpdateTokens(encryptedAccessToken, encryptedRefreshToken, expiresAt);
+        Scopes = scopes;
+    }
+
+    /// <summary>
     /// Marks the connection as invalid (e.g., when refresh fails or user revokes access).
     /// </summary>
     public void MarkInvalid()
