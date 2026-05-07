@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch and Debug Blazor WebAssembly",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5002",
+      "webRoot": "${workspaceFolder}/src/Ui.Web/wwwroot",
+      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
+      "preLaunchTask": "run-web"
+    }
+  ]
+}

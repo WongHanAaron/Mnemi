@@ -1,0 +1,88 @@
+@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+@inject Ui.Shared.Services.IAuthService AuthService
+@using Ui.Shared.Models
+@using Ui.Shared.Components.Layout
+
+<link rel="stylesheet" href="_content/Ui.Shared/Styles/sidebar-layout.css" />
+
+@if (_isCheckingAuth)
+{
+    <div class="auth-guard-loading" data-testid="auth-guard-loading">
+        <p>Checking authentication…</p>
+    </div>
+}
+else if (!_isAuthenticated)
+{
+    <div class="auth-guard-redirect" data-testid="auth-guard-redirect">
+        <p>Redirecting to sign in…</p>
+    </div>
+}
+else
+{
+    <div class="layout-shell">
+        <AppSidebar
+            ActiveRoute="@GetActiveRoute()"
+            PinnedDecks="@GetSamplePinnedDecks()"
+            OnDeckSelected="@HandleDeckSelected" />
+        <main class="layout-content" aria-live="polite">
+            @Body
+        </main>
+    </div>
+}
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+@code {
+    private bool _isCheckingAuth = true;
+    private bool _isAuthenticated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var state = await AuthService.GetCurrentAuthStateAsync();
+            _isAuthenticated = state.IsAuthenticated;
+
+            if (!_isAuthenticated)
+            {
+                var returnUrl = Navigation.ToBaseRelativePath(Navigation.Uri);
+                var loginUrl = "/login";
+                if (!string.IsNullOrEmpty(returnUrl) && returnUrl != "/")
+                {
+                    loginUrl += $"?returnUrl={Uri.EscapeDataString(returnUrl)}";
+                }
+                Navigation.NavigateTo(loginUrl, forceLoad: true);
+            }
+        }
+        finally
+        {
+            _isCheckingAuth = false;
+        }
+    }
+
+    private string GetActiveRoute()
+    {
+        var uri = new Uri(Navigation.Uri);
+        return uri.AbsolutePath;
+    }
+
+    private static IReadOnlyList<PinnedDeckItem> GetSamplePinnedDecks()
+    {
+        return new[]
+        {
+            new PinnedDeckItem("1", "Spanish Verbs", "/review/deck1"),
+            new PinnedDeckItem("2", "World Capitals", "/review/deck2"),
+            new PinnedDeckItem("3", "Periodic Table", "/review/deck3"),
+        };
+    }
+
+    private void HandleDeckSelected(PinnedDeckItem deck)
+    {
+        Navigation.NavigateTo(deck.Href);
+    }
+}

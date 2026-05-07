@@ -10,9 +10,10 @@ Mnemi/
 │   ├── Domain/                    # Domain layer (core business logic)
 │   ├── Application/               # Application layer (orchestration, ports)
 │   ├── Adapter.*/                 # Adapters for external systems (speech, storage, etc.)
-│   ├── Ui.Shared/                 # Shared Blazor components
-│   ├── Ui.Web/                    # Web application (Blazor WebAssembly)
-│   └── Ui.Maui/                   # MAUI Blazor application (cross-platform)
+│   ├── App/Ui.Shared/                 # Shared Blazor components
+│   ├── App/Ui.Web/                    # Web Server
+|   ├── App/Ui.Web.Client/             # Web Assembly Client
+│   └── App/Ui/                        # MAUI Blazor application (cross-platform)
 ├── tests/                         # Test projects
 │   ├── Domain.Tests/              # Domain logic tests
 │   ├── Application.Tests/         # Integration tests
@@ -24,7 +25,7 @@ Mnemi/
 ├── docs/                          # Documentation
 │   ├── users/                     # User-facing documentation
 │   └── dev/                       # Developer documentation
-└── Mnemi.sln                      # Solution file
+└── Mnemi.slnx                     # Solution file
 ```
 
 ## Layer Responsibilities
@@ -55,7 +56,7 @@ Mnemi/
   - `Adapter.Storage.GoogleDrive/` - Cloud storage
   - `Adapter.Renderer.CommonMark/` - Markdown rendering
 
-### UI Shared (`src/Ui.Shared/`)
+### UI Shared (`src/App/Ui.Shared/`)
 - **Purpose**: Reusable Blazor components
 - **Platforms**: Web (WebAssembly) and MAUI
 - **Components**:
@@ -64,16 +65,25 @@ Mnemi/
   - Tag/group navigation
   - Study progress indicators
 
-### UI Web (`src/Ui.Web/`)
-- **Purpose**: Browser-based application
-- **Type**: Blazor WebAssembly
-- **Entry Point**: `Program.cs`
+### UI Web (`src/App/Ui.Web/`)
+- **Purpose**: ASP.NET Core host for the Blazor web application
+- **Type**: Blazor Web App (server-hosted with interactive Server and WebAssembly render modes)
 - **Responsibilities**:
-  - Web-specific routing and layout
-  - Browser storage (IndexedDB)
-  - Web-based state management
+  - Server-side hosting and HTTP pipeline configuration
+  - Static asset delivery and antiforgery protection
+  - Interactive Server render mode support
+  - Service Worker registration for PWA capabilities
 
-### UI MAUI (`src/Ui.Maui/`)
+### UI Web Client (`src/App/Ui.Web.Client/`)
+- **Purpose**: Blazor WebAssembly client that runs in the browser
+- **Type**: Blazor WebAssembly (`Microsoft.NET.Sdk.BlazorWebAssembly`)
+- **Responsibilities**:
+  - Client-side rendering via WebAssembly
+  - Browser-based state management
+  - Client-specific services and form factor detection
+  - Runs as the interactive WebAssembly component within the Ui.Web host
+
+### UI MAUI (`src/App/Ui.Maui/`)
 - **Purpose**: Cross-platform mobile and desktop
 - **Type**: MAUI Blazor
 - **Platforms**: iOS, Android, Windows, macOS
@@ -88,10 +98,11 @@ Mnemi/
 Domain (no dependencies)
   ↑
   ├── Application
-  │   ├── Adapter.* (parallel)
-  │   └── Ui.Shared
-  │       ├── Ui.Web
-  │       └── Ui.Maui
+  │   └── Adapter.* (parallel)
+  └── Ui.Shared
+      ├── Ui.Web.Client
+      │   └── Ui.Web (ASP.NET Core host)
+      └── Ui.Maui
 ```
 
 ## Testing Strategy

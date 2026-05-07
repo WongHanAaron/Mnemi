@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	<RootNamespace>Mnemi.Adapter.Source.GoogleDrive</RootNamespace>
+	<AssemblyName>Mnemi.Adapter.Source.GoogleDrive</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Application\Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<PackageReference Include="Google.Apis.Drive.v3" Version="1.68.0.3533" />
+  </ItemGroup>
+</Project>

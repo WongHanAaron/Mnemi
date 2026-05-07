@@ -1,15 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>Mnemi.Domain</RootNamespace>
-    <AssemblyName>Mnemi.Domain</AssemblyName>
+    <Nullable>enable</Nullable>
+	<RootNamespace>Mnemi.Domain</RootNamespace>
+	<AssemblyName>Mnemi.Domain</AssemblyName>
   </PropertyGroup>
-
-  <ItemGroup>
-    <!-- Domain logic and models; no external dependencies by design -->
-  </ItemGroup>
 
 </Project>

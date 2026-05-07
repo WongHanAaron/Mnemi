@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Adapter.Source.FileSystem/Adapter.Source.FileSystem.csproj" />
+    <Project Path="src/Adapter.Source.GoogleDrive/Adapter.Source.GoogleDrive.csproj" />
+    <Project Path="src/Application/Application.csproj" />
+    <Project Path="src/Domain/Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/App/">
+    <Project Path="src/App/Ui.Shared/Ui.Shared.csproj" />
+    <Project Path="src/App/Ui.Web.Client/Ui.Web.Client.csproj" />
+    <Project Path="src/App/Ui.Web/Ui.Web.csproj" />
+    <Project Path="src/App/Ui/Ui.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+</Solution>
