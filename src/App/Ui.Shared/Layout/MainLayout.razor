@@ -1,6 +1,7 @@
 @inherits LayoutComponentBase
 @inject NavigationManager Navigation
 @inject Ui.Shared.Services.IAuthService AuthService
+@inject Ui.Shared.Services.IAuthBypassService AuthBypass
 @using Ui.Shared.Models
 @using Ui.Shared.Components.Layout
 
@@ -45,6 +46,14 @@ else
     {
         try
         {
+            // Feature flag: skip auth when E2E_TEST_AUTH_BYPASS is set (e.g. for E2E tests)
+            if (AuthBypass.IsAuthBypassed())
+            {
+                _isAuthenticated = true;
+                _isCheckingAuth = false;
+                return;
+            }
+
             var state = await AuthService.GetCurrentAuthStateAsync();
             _isAuthenticated = state.IsAuthenticated;
 

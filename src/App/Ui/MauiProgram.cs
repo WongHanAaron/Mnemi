@@ -30,6 +30,9 @@ namespace Ui
             // MAUI IHomeDashboardService — stub dashboard data (shared Home page requires it)
             builder.Services.AddScoped<IHomeDashboardService, MauiHomeDashboardService>();
 
+            // Feature flags
+            builder.Services.AddScoped<IAuthBypassService, MauiAuthBypassService>();
+
             builder.Services.AddMauiBlazorWebView();
 
 #if DEBUG

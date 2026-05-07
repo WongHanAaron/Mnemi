@@ -37,6 +37,10 @@ builder.Services.AddScoped<ITokenEncryptionService, WebTokenEncryptionService>()
 builder.Services.AddScoped<IUserRepository, StubUserRepository>();
 builder.Services.AddScoped<IAuthConnectionRepository, StubAuthConnectionRepository>();
 
+// Feature flags — read from config (env vars / appsettings / CLI)
+//   Set env var E2E_TEST_AUTH_BYPASS=1 or appsettings key "Auth:BypassForE2E" to bypass auth
+builder.Services.AddScoped<IAuthBypassService, WebAuthBypassService>();
+
 // ---- Authentication Setup ----
 builder.Services.AddAuthentication(options =>
 {
