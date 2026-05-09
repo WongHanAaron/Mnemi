@@ -1,14 +1,6 @@
-using Ui.Shared.Services;
+using Mnemi.Application.Features.FeatureFlags;
 
 namespace Ui.Web.Services;
-
-/// <summary>
-/// Internal mapping of feature flags to configuration key names.
-/// </summary>
-internal static class FeatureFlagNames
-{
-    public const string BypassAuth = "E2E_TEST_AUTH_BYPASS";
-}
 
 /// <summary>
 /// Server-side feature flag service backed by ASP.NET Core IConfiguration.
@@ -29,13 +21,7 @@ public class WebFeatureFlagService : IFeatureFlagService
 
     public bool BypassAuth() => IsEnabled(FeatureFlag.BypassAuth);
 
-    public bool IsEnabled(FeatureFlag flag) => IsEnabled(GetConfigName(flag));
-
-    private static string GetConfigName(FeatureFlag flag) => flag switch
-    {
-        FeatureFlag.BypassAuth => FeatureFlagNames.BypassAuth,
-        _ => throw new ArgumentOutOfRangeException(nameof(flag), flag, null)
-    };
+    public bool IsEnabled(FeatureFlag flag) => IsEnabled(flag.GetConfigName());
 
     private bool IsEnabled(string flag)
     {
