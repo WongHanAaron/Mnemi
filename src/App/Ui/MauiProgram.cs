@@ -31,7 +31,7 @@ namespace Ui
             builder.Services.AddScoped<IHomeDashboardService, MauiHomeDashboardService>();
 
             // Feature flags
-            builder.Services.AddScoped<IAuthBypassService, MauiAuthBypassService>();
+            builder.Services.AddScoped<IFeatureFlagService, MauiFeatureFlagService>();
 
             builder.Services.AddMauiBlazorWebView();
 
