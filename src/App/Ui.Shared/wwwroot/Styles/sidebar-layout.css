@@ -347,7 +347,7 @@ body {
         flex-shrink: 0;
     }
 
-    .app-sidebar--open .sidebar-section__pinicon {
+d    .app-sidebar--open .sidebar-section__pinicon {
         width: 0.875rem;
         height: 0.875rem;
     }
