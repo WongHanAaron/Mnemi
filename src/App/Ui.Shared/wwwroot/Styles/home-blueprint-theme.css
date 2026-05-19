@@ -92,43 +92,6 @@ body {
 .home-main { padding: 1.5rem; display: grid; gap: 1.3rem; }
 
 /* ==========================================================================
-   Deprecated: Home Side Navigation (kept for backward compat)
-   ========================================================================== */
-
-.home-sidenav {
-    border-right: 1px solid var(--clay-border);
-    padding: 1.5rem 1rem;
-    background: var(--clay-surface);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: 0 var(--clay-radius) var(--clay-radius) 0;
-}
-
-.home-sidenav__brand { margin-bottom: 1.5rem; }
-.home-sidenav__brand-label {
-    margin: 0; color: var(--clay-muted);
-    font-size: 0.74rem; letter-spacing: 0.24em; text-transform: uppercase;
-}
-.home-sidenav__brand-title {
-    margin: 0.15rem 0 0; font-size: 1.55rem; color: var(--clay-text);
-}
-.home-sidenav__list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.55rem; }
-.home-sidenav__item button {
-    width: 100%; border: 1px solid transparent; background: transparent;
-    color: var(--clay-text); padding: 0.9rem 1rem; border-radius: var(--clay-radius);
-    display: flex; justify-content: space-between; align-items: center;
-    cursor: pointer; transition: all 0.2s ease;
-}
-.home-sidenav__item button:hover,
-.home-sidenav__item button:focus-visible,
-.home-sidenav__item--active button {
-    background: var(--clay-surface-hover);
-    border-color: var(--clay-border);
-    box-shadow: var(--clay-shadow-inner);
-}
-.home-shell__menu-label { color: var(--clay-muted); font-size: 0.8rem; }
-
-/* ==========================================================================
    Home Section Cards (Claymorphism style)
    ========================================================================== */
 
@@ -282,14 +245,6 @@ body {
 /* ==========================================================================
    Responsive
    ========================================================================== */
-
-@media (max-width: 1080px) {
-    .home-shell { grid-template-columns: 1fr; }
-    .home-sidenav {
-        border-right: none; border-bottom: 1px solid var(--clay-border);
-        border-radius: var(--clay-radius) var(--clay-radius) 0 0;
-    }
-}
 
 @media (max-width: 720px) {
     .home-welcome, .home-deck-card__footer {
