@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Mnemi.Application;
 using Mnemi.Application.Features.FeatureFlags;
 using Mnemi.Application.Home;
 using Ui.Services;
@@ -18,6 +19,9 @@ namespace Ui
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
+
+            // Register Application layer services (IGetPinnedDecks, etc.)
+            builder.Services.AddApplicationServices();
 
             // Add device-specific services used by the Ui.Shared project
             builder.Services.AddSingleton<IFormFactor, FormFactor>();

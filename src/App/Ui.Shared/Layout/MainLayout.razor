@@ -2,8 +2,10 @@
 @inject NavigationManager Navigation
 @inject Ui.Shared.Services.IAuthService AuthService
 @inject Mnemi.Application.Features.FeatureFlags.IFeatureFlagService FeatureFlagService
+@inject Mnemi.Application.Ports.IGetPinnedDecks GetPinnedDecks
 @using Ui.Shared.Models
 @using Ui.Shared.Components.Layout
+@using Mnemi.Application.Models
 
 <link rel="stylesheet" href="_content/Ui.Shared/Styles/sidebar-layout.css" />
 
@@ -24,7 +26,7 @@ else
     <div class="layout-shell">
         <AppSidebar
             ActiveRoute="@GetActiveRoute()"
-            PinnedDecks="@GetSamplePinnedDecks()"
+            PinnedDecks="@_pinnedDecks"
             OnDeckSelected="@HandleDeckSelected" />
         <main class="layout-content" aria-live="polite">
             @Body
@@ -41,6 +43,7 @@ else
 @code {
     private bool _isCheckingAuth = true;
     private bool _isAuthenticated;
+    private IReadOnlyList<PinnedDeckItem> _pinnedDecks = Array.Empty<PinnedDeckItem>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -51,6 +54,7 @@ else
             {
                 _isAuthenticated = true;
                 _isCheckingAuth = false;
+                await LoadPinnedDecksAsync();
                 return;
             }
 
@@ -67,6 +71,10 @@ else
                 }
                 Navigation.NavigateTo(loginUrl, forceLoad: true);
             }
+            else
+            {
+                await LoadPinnedDecksAsync();
+            }
         }
         finally
         {
@@ -74,20 +82,15 @@ else
         }
     }
 
+    private async Task LoadPinnedDecksAsync()
+    {
+        _pinnedDecks = await GetPinnedDecks.GetPinnedDecksAsync();
+    }
+
     private string GetActiveRoute()
     {
         var uri = new Uri(Navigation.Uri);
         return uri.AbsolutePath;
-    }
-
-    private static IReadOnlyList<PinnedDeckItem> GetSamplePinnedDecks()
-    {
-        return new[]
-        {
-            new PinnedDeckItem("1", "Spanish Verbs", "/review/deck1"),
-            new PinnedDeckItem("2", "World Capitals", "/review/deck2"),
-            new PinnedDeckItem("3", "Periodic Table", "/review/deck3"),
-        };
     }
 
     private void HandleDeckSelected(PinnedDeckItem deck)

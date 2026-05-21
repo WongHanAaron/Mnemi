@@ -123,7 +123,7 @@
 **Purpose**: Final cleanup, consistency, and verification across all user stories
 
 - [x] T034 [P] Consistent sidebar colors using CSS variables from home-blueprint-theme.css in `src/Ui.Shared/wwwroot/Styles/sidebar-layout.css`
-- [ ] T035 [P] Verify sidebar renders correctly in MAUI Blazor host by launching `src/Ui.Maui/Ui.Maui.csproj` and checking layout
+- [x] T035 [P] Verify sidebar renders correctly in MAUI Blazor host by launching `src/App/Ui/Ui.csproj` and checking layout
 - [x] T036 Removed remaining references to NavMenu.razor (only MainLayout referenced it, now updated)
 - [x] T037 Verified no horizontal top-bar remnants in CSS or Razor files
 - [x] T038 Full app build passes: `dotnet build src/Ui.Web/Ui.Web.csproj` compiles with 0 errors

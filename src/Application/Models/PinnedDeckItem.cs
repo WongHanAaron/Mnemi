@@ -1,4 +1,4 @@
-namespace Ui.Shared.Models;
+namespace Mnemi.Application.Models;
 
 /// <summary>
 /// Represents a deck that the user has pinned for quick access in the sidebar.

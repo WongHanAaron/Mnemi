@@ -1,5 +1,6 @@
 @namespace Ui.Shared.Components.Layout
 @using Ui.Shared.Models
+@using Mnemi.Application.Models
 @implements IDisposable
 @inject Ui.Shared.Ports.IViewStateService ViewStateService
 
@@ -27,7 +28,9 @@
     </div>
 
     <nav class="app-sidebar__content">
-        <Ui.Shared.Components.Layout.SidebarQuickLinks ActiveRoute="@ActiveRoute" />
+        <Ui.Shared.Components.Layout.SidebarQuickLinks 
+            ActiveRoute="@ActiveRoute"
+            QuickLinks="@QuickLinks" />
 
         <Ui.Shared.Components.Layout.SidebarPinnedDecks
             PinnedDecks="@PinnedDecks"
@@ -40,13 +43,22 @@
     [Parameter]
     public string ActiveRoute { get; set; } = "/";
 
+    /// <summary>The list of quick link items to display.</summary>
+    [Parameter]
+    public IReadOnlyList<Models.SidebarNavItem> QuickLinks { get; set; } = new[]
+    {
+        new Models.SidebarNavItem("home", "Home", "/", "home"),
+        new Models.SidebarNavItem("review", "Review", "/review", "review"),
+        new Models.SidebarNavItem("decks", "Decks", "/decks", "decks"),
+    };
+
     /// <summary>The user's pinned flashcard decks, or empty if none.</summary>
     [Parameter]
-    public IReadOnlyList<Models.PinnedDeckItem> PinnedDecks { get; set; } = Array.Empty<Models.PinnedDeckItem>();
+    public IReadOnlyList<PinnedDeckItem> PinnedDecks { get; set; } = Array.Empty<PinnedDeckItem>();
 
     /// <summary>Callback when a pinned deck is clicked.</summary>
     [Parameter]
-    public EventCallback<Models.PinnedDeckItem> OnDeckSelected { get; set; }
+    public EventCallback<PinnedDeckItem> OnDeckSelected { get; set; }
 
     private bool _sidebarOpen;
     private ViewState _currentViewState;

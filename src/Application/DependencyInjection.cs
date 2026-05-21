@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using Mnemi.Application.Features.PinnedDecks;
+using Mnemi.Application.Ports;
 
 namespace Mnemi.Application;
 
@@ -14,8 +16,9 @@ public static class DependencyInjection
     /// </summary>
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        // Register any Application-layer services that have no
-        // host-specific dependency here.
+        // Register Application-layer services
+        services.AddSingleton<IGetPinnedDecks, GetPinnedDecksHandler>();
+
         return services;
     }
 }

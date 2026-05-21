@@ -8,23 +8,28 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-#blazor-error-ui {
-    display: none;
-}
-
-/* Layout shell: uses CSS Grid from sidebar-layout.css.
-   No top-bar styles — navigation is in the shared AppSidebar component. */
-
-.layout-shell {
-    /* Defined in Ui.Shared wwwroot/Styles/sidebar-layout.css */
+/* ---- Authentication Guard Loading/Redirect States ---- */
+.auth-guard-loading,
+.auth-guard-redirect {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     min-height: 100vh;
+    padding: 2rem;
+    text-align: center;
+    color: #666;
+    font-size: 0.95rem;
 }
 
-.layout-content {
-    /* Defined in Ui.Shared wwwroot/Styles/sidebar-layout.css */
-    min-height: 100vh;
+.auth-guard-loading p {
+    margin: 0;
 }
 
+.auth-guard-redirect p {
+    margin: 0;
+}
+
+/* ---- Blazor Error UI ---- */
 #blazor-error-ui {
     display: none;
     background: #ffffe0;
