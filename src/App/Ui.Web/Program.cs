@@ -23,8 +23,8 @@ builder.Services.AddApplicationServices();
 // Add device-specific services used by the Ui.Shared project
 builder.Services.AddSingleton<IFormFactor, FormFactor>();
 
-// Stub IViewStateService — used by AppSidebar (replaced in Phase 5 with WebViewStateService)
-builder.Services.AddScoped<IViewStateService, StubViewStateService>();
+// WebViewStateService — tracks viewport size via JavaScript interop (Phase 5)
+builder.Services.AddScoped<IViewStateService, WebViewStateService>();
 
 // Home dashboard services (stub data provider)
 builder.Services.AddScoped<HomeDashboardStubDataProvider>();
@@ -95,7 +95,10 @@ else
     app.UseHsts();
 }
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseAntiforgery();
 

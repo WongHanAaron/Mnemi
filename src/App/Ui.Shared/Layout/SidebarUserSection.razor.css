@@ -1,0 +1,47 @@
+/* ==========================================================================
+   SidebarUserSection — User avatar and name display
+   ========================================================================== */
+
+.sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.sidebar-user__avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    background: var(--clay-accent, #f6ad55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #171717;
+}
+
+.sidebar-user__info {
+    min-width: 0;
+}
+
+.sidebar-user__name {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--sidebar-foreground, #fafafa);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---- Tablet compact mode ---- */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .sidebar-user__info {
+        display: none;
+    }
+
+    .app-sidebar--open .sidebar-user__info {
+        display: block;
+    }
+}

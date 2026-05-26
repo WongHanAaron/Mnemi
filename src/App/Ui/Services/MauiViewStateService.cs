@@ -21,4 +21,6 @@ public class MauiViewStateService : IViewStateService
     }
 
     public event Action<SharedViewState>? OnViewStateChanged;
+
+    public Task EnsureInitializedAsync() => Task.CompletedTask;
 }

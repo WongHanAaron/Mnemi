@@ -1,0 +1,48 @@
+/* ==========================================================================
+   QuickStatTile — Scoped CSS
+   ========================================================================== */
+
+.home-quick-stat {
+    padding: 1rem 1.1rem;
+    background: var(--clay-surface);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--clay-border);
+    border-radius: var(--clay-radius-xl);
+    box-shadow: var(--clay-shadow-card);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.home-quick-stat:hover {
+    box-shadow: var(--clay-shadow-medium);
+    background: var(--clay-surface-hover);
+    transform: translateY(-1px);
+}
+
+.home-quick-stat__label {
+    color: var(--clay-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.home-quick-stat__value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--clay-text);
+}
+
+.home-quick-stat__trend {
+    font-size: 0.75rem;
+    color: var(--clay-muted);
+}
+
+.home-quick-stat--up .home-quick-stat__trend {
+    color: var(--clay-good);
+}
+
+.home-quick-stat--down .home-quick-stat__trend {
+    color: var(--clay-bad);
+}

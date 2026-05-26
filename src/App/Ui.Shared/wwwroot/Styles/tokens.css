@@ -1,0 +1,75 @@
+/* ==========================================================================
+   Mnemi Design Tokens — Claymorphism Dark Theme
+   Based on shadcn/ui token system + Claymorphism visual design.
+   Reference: https://tweakcn.com/editor/theme
+   
+   This file contains ALL :root custom properties.
+   It is the single source of truth for design tokens across the application.
+   ========================================================================== */
+
+:root {
+    /* ---- shadcn/ui Base Tokens ---- */
+    --background: #171717;
+    --foreground: #fafafa;
+
+    --card: #2d2d2d;
+    --card-foreground: #fafafa;
+
+    --popover: #3d3d3d;
+    --popover-foreground: #fafafa;
+
+    --primary: #eaeaea;
+    --primary-foreground: #171717;
+
+    --secondary: #3d3d3d;
+    --secondary-foreground: #fafafa;
+
+    --muted: #3d3d3d;
+    --muted-foreground: #b0b0b0;
+
+    --accent: #585858;
+    --accent-foreground: #fafafa;
+
+    --destructive: #ef4444;
+    --destructive-foreground: #fafafa;
+
+    --border: rgba(255, 255, 255, 0.10);
+    --input: rgba(255, 255, 255, 0.08);
+    --ring: #6b6b6b;
+
+    --radius: 0.85rem;
+
+    /* ---- Sidebar Tokens ---- */
+    --sidebar-background: #1e1e1e;
+    --sidebar-foreground: #fafafa;
+    --sidebar-primary: #4f6ef2;
+    --sidebar-primary-foreground: #fafafa;
+    --sidebar-accent: #3d3d3d;
+    --sidebar-accent-foreground: #fafafa;
+    --sidebar-border: rgba(255, 255, 255, 0.08);
+    --sidebar-ring: #6b6b6b;
+
+    /* ---- Claymorphism Effect Tokens ---- */
+    --clay-surface: rgba(45, 45, 45, 0.65);
+    --clay-surface-hover: rgba(61, 61, 61, 0.75);
+    --clay-border: rgba(255, 255, 255, 0.10);
+    --clay-text: #fafafa;
+    --clay-muted: #b0b0b0;
+    --clay-accent: #a78bfa;
+    --clay-good: #4ade80;
+    --clay-bad: #f87171;
+    --clay-radius: 0.85rem;
+    --clay-radius-xl: 1.2rem;
+
+    /* ---- Claymorphism Shadows (soft, layered, inner+outer) ---- */
+    --clay-shadow-light: rgba(255, 255, 255, 0.03);
+    --clay-shadow-dark: rgba(0, 0, 0, 0.4);
+    --clay-shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.04),
+                         inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+    --clay-shadow-outer: 0 4px 12px rgba(0, 0, 0, 0.25),
+                         0 1px 3px rgba(0, 0, 0, 0.2);
+    --clay-shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.35),
+                          0 2px 8px rgba(0, 0, 0, 0.25);
+    --clay-shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}

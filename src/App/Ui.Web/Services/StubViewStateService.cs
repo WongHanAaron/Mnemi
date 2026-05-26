@@ -12,4 +12,6 @@ public class StubViewStateService : IViewStateService
     public ViewState Current => ViewState.Desktop;
 
     public event Action<ViewState>? OnViewStateChanged;
+
+    public Task EnsureInitializedAsync() => Task.CompletedTask;
 }

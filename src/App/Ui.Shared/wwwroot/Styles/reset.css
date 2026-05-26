@@ -1,0 +1,35 @@
+/* ==========================================================================
+   Mnemi Global Resets & Base Styles
+   
+   Consolidated from:
+   - Ui.Web/wwwroot/css/app.css (html, body rules)
+   - home-blueprint-theme.css (body rule)
+   - sidebar-layout.css (body rule, prefers-reduced-motion)
+   
+   This file handles global resets and base typography.
+   ========================================================================== */
+
+/* ---- Global Base ---- */
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---- Reduced Motion Support ---- */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

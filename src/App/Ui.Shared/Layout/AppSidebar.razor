@@ -69,6 +69,14 @@
         ViewStateService.OnViewStateChanged += HandleViewStateChanged;
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await ViewStateService.EnsureInitializedAsync();
+        }
+    }
+
     private void HandleViewStateChanged(ViewState newState)
     {
         _currentViewState = newState;

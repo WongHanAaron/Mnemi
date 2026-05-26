@@ -1,0 +1,104 @@
+/* ==========================================================================
+   SidebarSection — Collapsible section with header and content
+   ========================================================================== */
+
+.sidebar-section {
+    margin-bottom: 0.25rem;
+}
+
+.sidebar-section__header {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+    color: var(--muted-foreground, #b0b0b0);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.sidebar-section__header:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--sidebar-foreground, #fafafa);
+}
+
+.sidebar-section__chevron {
+    width: 0.875rem;
+    height: 0.875rem;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+
+.sidebar-section__chevron--open {
+    transform: rotate(90deg);
+}
+
+/* ---- Sidebar Section Content ---- */
+.sidebar-section__content {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows 0.25s ease, opacity 0.2s ease, margin 0.25s ease;
+    margin-top: 0;
+}
+
+.sidebar-section__content--open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    margin-top: 0.25rem;
+}
+
+/* Inner wrapper needed for overflow */
+.sidebar-section__content > :first-child {
+    overflow: hidden;
+}
+
+/* ---- Pin Icon on sidebar section (Pinned Decks) ---- */
+.sidebar-section__pinicon {
+    width: 0.875rem;
+    height: 0.875rem;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.sidebar-section__pinicon--open {
+    transform: rotate(45deg);
+}
+
+/* ---- Tablet compact mode ---- */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .sidebar-section__header {
+        justify-content: center;
+        padding: 0.5rem;
+    }
+
+    .app-sidebar--open .sidebar-section__header {
+        justify-content: flex-start;
+        padding: 0.375rem 0.5rem;
+    }
+
+    .sidebar-section__header span {
+        display: none;
+    }
+
+    .app-sidebar--open .sidebar-section__header span {
+        display: inline;
+    }
+
+    /* Pin icon for Pinned Decks — adjusted for compact mode */
+    .sidebar-section__pinicon {
+        width: 1rem;
+        height: 1rem;
+        flex-shrink: 0;
+    }
+
+    .app-sidebar--open .sidebar-section__pinicon {
+        width: 0.875rem;
+        height: 0.875rem;
+    }
+}

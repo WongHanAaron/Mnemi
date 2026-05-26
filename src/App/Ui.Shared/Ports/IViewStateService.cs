@@ -14,4 +14,10 @@ public interface IViewStateService
 
     /// <summary>Raised when the ViewState changes (e.g., window resize or orientation change).</summary>
     event Action<ViewState> OnViewStateChanged;
+
+    /// <summary>
+    /// Initializes the service's viewport tracking. Must be called from OnAfterRenderAsync.
+    /// Safe to call multiple times; only initializes once.
+    /// </summary>
+    Task EnsureInitializedAsync();
 }
