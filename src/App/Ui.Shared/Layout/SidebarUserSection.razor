@@ -1,11 +1,21 @@
 @namespace Ui.Shared.Components.Layout
+@inject NavigationManager Navigation
 
-<div class="sidebar-user" data-testid="sidebar-user-section">
+<div class="sidebar-user"
+     data-testid="sidebar-user-section"
+     role="button"
+     tabindex="0"
+     aria-label="Account settings"
+     @onclick="NavigateToAccount"
+     @onkeydown="HandleKeyDown">
     <div class="sidebar-user__avatar" aria-hidden="true">
         @Initials
     </div>
     <div class="sidebar-user__info">
         <div class="sidebar-user__name">@UserName</div>
+        <svg class="sidebar-user__arrow" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor"/>
+        </svg>
     </div>
 </div>
 
@@ -26,5 +36,18 @@
             return $"{parts[0][0]}{parts[^1][0]}".ToUpperInvariant();
 
         return name[..Math.Min(2, name.Length)].ToUpperInvariant();
+    }
+
+    private void NavigateToAccount()
+    {
+        Navigation.NavigateTo("/account");
+    }
+
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key is "Enter" or " ")
+        {
+            NavigateToAccount();
+        }
     }
 }
