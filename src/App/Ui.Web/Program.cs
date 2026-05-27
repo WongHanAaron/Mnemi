@@ -38,6 +38,15 @@ builder.Services.AddScoped<ITokenEncryptionService, WebTokenEncryptionService>()
 builder.Services.AddScoped<IUserRepository, StubUserRepository>();
 builder.Services.AddScoped<IAuthConnectionRepository, StubAuthConnectionRepository>();
 
+// User profile management (Phase 1: stub — replaced by real DB-backed service later)
+builder.Services.AddScoped<IUserService, Ui.Shared.Stubs.StubUserService>();
+
+// Document source management (Phase 3: stub — replaced by real DB-backed service later)
+builder.Services.AddScoped<IDocumentSourceService, Ui.Shared.Stubs.StubDocumentSourceService>();
+
+// Provider icon service (shared across account components)
+builder.Services.AddScoped<Ui.Shared.Components.Account.IProviderIconService, Ui.Shared.Components.Account.DefaultProviderIconService>();
+
 // Feature flags — read from config (env vars / appsettings / CLI)
 //   Set env var E2E_TEST_AUTH_BYPASS=1 to bypass auth for E2E tests
 builder.Services.AddScoped<IFeatureFlagService, WebFeatureFlagService>();

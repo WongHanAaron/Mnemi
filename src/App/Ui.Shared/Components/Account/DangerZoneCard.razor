@@ -1,0 +1,80 @@
+@inject IUserService UserService
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+<CardLayout Title="⚠️ Danger Zone" Danger="true" DataTestId="danger-zone-card">
+    <ChildContent>
+        <p class="danger-zone__description">
+            Delete your account and all associated data.
+        </p>
+        <p class="danger-zone__warning">
+            This action cannot be undone.
+        </p>
+
+        <button type="button"
+                class="danger-zone__trigger-btn"
+                data-testid="delete-account-button"
+                @onclick="OpenConfirmDialog">
+            Delete My Account
+        </button>
+
+        @if (_errorMessage is not null)
+        {
+            <p class="danger-zone__error" data-testid="delete-error">@_errorMessage</p>
+        }
+    </ChildContent>
+</CardLayout>
+
+@if (_showDialog)
+{
+    <ConfirmDeleteDialog ExpectedEmail="@_email"
+                         IsDeleting="@_isDeleting"
+                         OnConfirm="HandleDeleteAccountAsync"
+                         OnCancel="CloseDialog" />
+}
+
+@code {
+    private bool _showDialog;
+    private bool _isDeleting;
+    private string? _errorMessage;
+    private string _email = "student@mnemi.app";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthService.GetCurrentAuthStateAsync();
+        if (state.IsAuthenticated)
+        {
+            _email = state.Email ?? "student@mnemi.app";
+        }
+    }
+
+    private void OpenConfirmDialog()
+    {
+        _errorMessage = null;
+        _showDialog = true;
+    }
+
+    private void CloseDialog()
+    {
+        _showDialog = false;
+    }
+
+    private async Task HandleDeleteAccountAsync()
+    {
+        _errorMessage = null;
+        _isDeleting = true;
+
+        var result = await UserService.DeleteAccountAsync();
+
+        if (result.Success)
+        {
+            await AuthService.LogoutAsync();
+            Navigation.NavigateTo("/login?deleted=true", forceLoad: true);
+        }
+        else
+        {
+            _isDeleting = false;
+            _errorMessage = result.ErrorMessage ?? "Failed to delete account. Please try again.";
+        }
+    }
+}

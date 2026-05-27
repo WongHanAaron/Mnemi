@@ -1,0 +1,94 @@
+@inherits Ui.Shared.Components.Helpers.AsyncDataComponent
+@inject IUserService UserService
+
+<CardLayout Title="🔗 Linked Providers" DataTestId="linked-providers-card">
+    <HeaderActions>
+        <button type="button"
+                class="account-card__action-btn account-card__action-btn--primary"
+                data-testid="link-new-provider-button"
+                @onclick="HandleLinkNew">
+            + Link New
+        </button>
+    </HeaderActions>
+    <ChildContent>
+        @if (IsLoading)
+        {
+            <div class="providers-skeleton" data-testid="providers-loading">
+                @for (var i = 0; i < 2; i++)
+                {
+                    <Skeleton Variant="row">
+                        <Skeleton Variant="avatar" />
+                        <div class="skeleton--row-text">
+                            <Skeleton Variant="text-short" />
+                            <Skeleton Variant="text" Width="50%" />
+                        </div>
+                        <Skeleton Variant="badge" />
+                        <Skeleton Variant="btn" />
+                    </Skeleton>
+                }
+            </div>
+        }
+        else if (_providers.Count == 0)
+        {
+            <p class="providers-empty" data-testid="providers-empty">
+                No providers linked.
+                <button type="button" class="providers-empty__link" @onclick="HandleLinkNew">
+                    Link your first provider
+                </button>
+            </p>
+        }
+        else
+        {
+            <div class="providers-list" data-testid="providers-list">
+                @foreach (var provider in _providers)
+                {
+                    <ProviderRow Provider="provider"
+                                 CanUnlink="@(_providers.Count > 1)"
+                                 OnUnlink="HandleUnlinkAsync" />
+                }
+            </div>
+        }
+
+        @if (ErrorMessage is not null)
+        {
+            <p class="providers-error" data-testid="providers-error">@ErrorMessage</p>
+        }
+    </ChildContent>
+</CardLayout>
+
+@code {
+    private IReadOnlyList<ProviderInfo> _providers = Array.Empty<ProviderInfo>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync(
+            async () => _providers = await UserService.ListProvidersAsync(),
+            "Failed to load providers. Please try again.");
+    }
+
+    private async Task HandleUnlinkAsync(string connectionId)
+    {
+        ErrorMessage = null;
+
+        var provider = _providers.FirstOrDefault(p => p.ConnectionId == connectionId);
+        if (provider is null) return;
+
+        var result = await UserService.UnlinkProviderAsync(connectionId);
+
+        if (result.Success)
+        {
+            await LoadAsync(
+                async () => _providers = await UserService.ListProvidersAsync(),
+                "Failed to load providers. Please try again.");
+        }
+        else
+        {
+            ErrorMessage = result.ErrorMessage;
+        }
+    }
+
+    private void HandleLinkNew()
+    {
+        // TODO: Redirect to OAuth flow with returnUrl=/account
+    }
+}

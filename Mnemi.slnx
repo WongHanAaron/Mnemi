@@ -11,5 +11,7 @@
     <Project Path="src/App/Ui.Web/Ui.Web.csproj" />
     <Project Path="src/App/Ui/Ui.csproj" />
   </Folder>
-  <Folder Name="/tests/" />
+  <Folder Name="/tests/">
+    <Project Path="tests/E2ETests/E2ETests.csproj" />
+  </Folder>
 </Solution>

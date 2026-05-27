@@ -1,0 +1,175 @@
+@inject IUserService UserService
+@using Mnemi.Application.Ports
+
+<CardLayout Title="👤 Profile" DataTestId="account-profile-card">
+    <HeaderActions>
+        @if (!_isEditing)
+        {
+            <button type="button"
+                    class="account-card__action-btn"
+                    data-testid="profile-edit-button"
+                    @onclick="EnterEditMode">
+                Edit
+            </button>
+        }
+        else
+        {
+            <div class="account-card__action-group">
+                <button type="button"
+                        class="account-card__action-btn account-card__action-btn--secondary"
+                        data-testid="profile-cancel-button"
+                        @onclick="CancelEdit">
+                    Cancel
+                </button>
+                <button type="button"
+                        class="account-card__action-btn"
+                        data-testid="profile-save-button"
+                        disabled="@_isSaving"
+                        @onclick="SaveEditAsync">
+                    @(_isSaving ? "Saving..." : "Save")
+                </button>
+            </div>
+        }
+    </HeaderActions>
+    <ChildContent>
+        <div class="account-field">
+            <label class="account-field__label" for="profile-display-name">Display Name</label>
+            @if (!_isEditing)
+            {
+                <span class="account-field__value"
+                      data-testid="profile-display-name-text">
+                    @DisplayName
+                </span>
+            }
+            else
+            {
+                <input id="profile-display-name"
+                       type="text"
+                       class="account-field__input @(_errorMessage is not null ? "account-field__input--error" : "")"
+                       data-testid="profile-display-name-input"
+                       @bind="_editValue"
+                       @bind:event="oninput"
+                       @onkeydown="HandleKeyDown"
+                       maxlength="101"
+                       autofocus />
+                @if (_errorMessage is not null)
+                {
+                    <span class="account-field__error"
+                          data-testid="profile-display-name-error">
+                        @_errorMessage
+                    </span>
+                }
+            }
+        </div>
+
+        <div class="account-field">
+            <label class="account-field__label">Email</label>
+            <span class="account-field__value account-field__value--muted"
+                  data-testid="profile-email-text">
+                @Email
+            </span>
+        </div>
+
+        <div class="account-field">
+            <label class="account-field__label">Member Since</label>
+            <span class="account-field__value account-field__value--muted"
+                  data-testid="profile-member-since-text">
+                @MemberSinceFormatted
+            </span>
+        </div>
+    </ChildContent>
+</CardLayout>
+
+<ToastNotification @ref="_toastRef" />
+
+@code {
+    private ToastNotification _toastRef = null!;
+    private bool _isEditing;
+    private bool _isSaving;
+    private string _editValue = string.Empty;
+    private string? _errorMessage;
+
+    [Parameter]
+    public string DisplayName { get; set; } = "Student";
+
+    [Parameter]
+    public string Email { get; set; } = "student@mnemi.app";
+
+    [Parameter]
+    public DateTime MemberSince { get; set; } = new(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc);
+
+    [Parameter]
+    public EventCallback<string> OnDisplayNameChanged { get; set; }
+
+    private string MemberSinceFormatted => MemberSince.ToString("MMMM d, yyyy");
+
+    protected override void OnParametersSet()
+    {
+        if (!_isEditing)
+        {
+            _editValue = DisplayName;
+        }
+    }
+
+    private void EnterEditMode()
+    {
+        _editValue = DisplayName;
+        _errorMessage = null;
+        _isEditing = true;
+    }
+
+    private void CancelEdit()
+    {
+        _editValue = DisplayName;
+        _errorMessage = null;
+        _isEditing = false;
+    }
+
+    private async Task SaveEditAsync()
+    {
+        _errorMessage = null;
+
+        // Client-side validation — avoid unnecessary service calls
+        if (string.IsNullOrWhiteSpace(_editValue))
+        {
+            _errorMessage = "Display name is required.";
+            return;
+        }
+
+        if (_editValue.Length > ValidationConstants.MaxDisplayNameLength)
+        {
+            _errorMessage = $"Display name must be {ValidationConstants.MaxDisplayNameLength} characters or less.";
+            return;
+        }
+
+        _isSaving = true;
+
+        var result = await UserService.UpdateDisplayNameAsync(_editValue.Trim());
+
+        _isSaving = false;
+
+        if (result.Success)
+        {
+            DisplayName = _editValue.Trim();
+            _isEditing = false;
+            await OnDisplayNameChanged.InvokeAsync(DisplayName);
+            _ = _toastRef.ShowAsync("✓ Saved");
+        }
+        else
+        {
+            _errorMessage = result.ErrorMessage;
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key is "Enter")
+        {
+            await SaveEditAsync();
+        }
+        else if (e.Key is "Escape")
+        {
+            CancelEdit();
+        }
+    }
+}

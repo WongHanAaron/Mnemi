@@ -2,7 +2,9 @@
 using Mnemi.Application;
 using Mnemi.Application.Features.FeatureFlags;
 using Mnemi.Application.Home;
+using Mnemi.Application.Ports;
 using Ui.Services;
+using Ui.Shared.Components.Account;
 using Ui.Shared.Ports;
 using Ui.Shared.Services;
 
@@ -32,8 +34,17 @@ namespace Ui
             // MAUI IAuthService — stub that returns authenticated (shared components require it)
             builder.Services.AddScoped<IAuthService, MauiAuthService>();
 
+            // MAUI IUserService — shared stub (shared Account page requires it)
+            builder.Services.AddScoped<IUserService, Ui.Shared.Stubs.StubUserService>();
+
+            // MAUI IDocumentSourceService — shared stub (shared Account page requires it)
+            builder.Services.AddScoped<IDocumentSourceService, Ui.Shared.Stubs.StubDocumentSourceService>();
+
             // MAUI IHomeDashboardService — stub dashboard data (shared Home page requires it)
             builder.Services.AddScoped<IHomeDashboardService, MauiHomeDashboardService>();
+
+            // Provider icon service (shared across account components)
+            builder.Services.AddScoped<IProviderIconService, DefaultProviderIconService>();
 
             // Feature flags
             builder.Services.AddScoped<IFeatureFlagService, MauiFeatureFlagService>();

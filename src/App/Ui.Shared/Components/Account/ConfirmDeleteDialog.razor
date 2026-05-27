@@ -1,0 +1,81 @@
+<div class="delete-dialog-overlay" data-testid="delete-dialog-overlay" @onclick="() => OnCancel.InvokeAsync()" @onkeydown="HandleKeyDown">
+    <div class="delete-dialog" data-testid="delete-dialog" @onclick:stopPropagation="true"
+         role="dialog" aria-modal="true" aria-labelledby="delete-dialog-title">
+        <h2 id="delete-dialog-title" class="delete-dialog__title">⚠️ Delete Account</h2>
+
+        <div class="delete-dialog__warning" data-testid="delete-dialog-warning">
+            <p>This will permanently delete your account and ALL data:</p>
+            <ul>
+                <li>Your flashcards and study progress</li>
+                <li>All linked providers (Google, GitHub)</li>
+                <li>All document sources and configurations</li>
+                <li>Your user profile</li>
+            </ul>
+            <p class="delete-dialog__warning-emphasis">This action <strong>CANNOT</strong> be undone.</p>
+        </div>
+
+        <label class="delete-dialog__label" for="delete-confirm-email">
+            Type your email to confirm:
+        </label>
+        <input id="delete-confirm-email"
+               type="text"
+               class="delete-dialog__input @(_mismatch ? "delete-dialog__input--error" : "")"
+               data-testid="delete-confirm-email-input"
+               placeholder="@ExpectedEmail"
+               @bind="_enteredEmail"
+               @bind:event="oninput" />
+
+        @if (_mismatch && !string.IsNullOrEmpty(_enteredEmail))
+        {
+            <p class="delete-dialog__hint" data-testid="delete-email-mismatch">
+                Email does not match
+            </p>
+        }
+
+        <div class="delete-dialog__actions">
+            <button type="button"
+                    class="delete-dialog__cancel-btn"
+                    data-testid="delete-cancel-button"
+                    @onclick="() => OnCancel.InvokeAsync()">
+                Cancel
+            </button>
+            <button type="button"
+                    class="delete-dialog__delete-btn"
+                    data-testid="delete-confirm-button"
+                    disabled="@(!_isConfirmed || IsDeleting)"
+                    @onclick="() => OnConfirm.InvokeAsync()">
+                @(IsDeleting ? "Deleting..." : "⛔ Permanently Delete Account")
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string _enteredEmail = string.Empty;
+
+    [Parameter, EditorRequired]
+    public string ExpectedEmail { get; set; } = string.Empty;
+
+    [Parameter]
+    public bool IsDeleting { get; set; }
+
+    [Parameter]
+    public EventCallback OnConfirm { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    private bool _isConfirmed =>
+        string.Equals(_enteredEmail.Trim(), ExpectedEmail.Trim(), StringComparison.OrdinalIgnoreCase);
+
+    private bool _mismatch =>
+        !string.IsNullOrEmpty(_enteredEmail) && !_isConfirmed;
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key is "Escape")
+        {
+            await OnCancel.InvokeAsync();
+        }
+    }
+}

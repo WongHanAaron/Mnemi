@@ -1,0 +1,47 @@
+@page "/account"
+@using Ui.Shared.Components.Account
+@inject Mnemi.Application.Ports.IUserService UserService
+@inject Ui.Shared.Services.IAuthService AuthService
+
+<PageTitle>Account Settings</PageTitle>
+
+<div class="settings-page">
+    <header class="settings-page__header">
+        <h1 class="settings-page__title">Account Settings</h1>
+        <p class="settings-page__subtitle" data-testid="account-settings-subtitle">
+            Manage your profile, providers, and content sources
+        </p>
+    </header>
+
+    <div class="settings-page__cards">
+        <AccountProfileCard DisplayName="@_displayName"
+                            Email="@_email"
+                            MemberSince="@_memberSince"
+                            OnDisplayNameChanged="HandleDisplayNameChanged" />
+        <LinkedProvidersCard />
+        <DocumentSourcesCard />
+        <DangerZoneCard />
+    </div>
+</div>
+
+@code {
+    private string _displayName = "Student";
+    private string _email = "student@mnemi.app";
+    private DateTime _memberSince = new(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc);
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthService.GetCurrentAuthStateAsync();
+        if (authState.IsAuthenticated)
+        {
+            _displayName = authState.DisplayName ?? "Student";
+            _email = authState.Email ?? "student@mnemi.app";
+        }
+    }
+
+    private void HandleDisplayNameChanged(string newDisplayName)
+    {
+        _displayName = newDisplayName;
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,36 @@
+@inject IProviderIconService IconService
+
+<div class="provider-row" data-testid="provider-row">
+    <div class="provider-row__info">
+        <span class="provider-row__icon" aria-hidden="true">
+            @IconService.GetProviderIcon(Provider.ProviderName)
+        </span>
+        <div class="provider-row__details">
+            <span class="provider-row__name">@Provider.ProviderName</span>
+            <span class="provider-row__connected-as">@Provider.ConnectedAs</span>
+        </div>
+    </div>
+    <span class="provider-row__status @(Provider.IsValid ? "provider-row__status--active" : "provider-row__status--expired")"
+          data-testid="provider-status">
+        @(Provider.IsValid ? "✅ Active" : "⚠️ Expired")
+    </span>
+    <button type="button"
+            class="provider-row__unlink-btn"
+            data-testid="provider-unlink-button"
+            disabled="@(!CanUnlink)"
+            title="@(CanUnlink ? $"Unlink {Provider.ProviderName}" : "Must have at least one linked provider")"
+            @onclick="() => OnUnlink.InvokeAsync(Provider.ConnectionId)">
+        Unlink
+    </button>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public ProviderInfo Provider { get; set; } = null!;
+
+    [Parameter]
+    public bool CanUnlink { get; set; } = true;
+
+    [Parameter]
+    public EventCallback<string> OnUnlink { get; set; }
+}

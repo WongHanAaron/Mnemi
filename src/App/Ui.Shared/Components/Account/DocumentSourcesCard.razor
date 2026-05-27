@@ -1,0 +1,110 @@
+@inherits Ui.Shared.Components.Helpers.AsyncDataComponent
+@inject IDocumentSourceService SourceService
+
+<CardLayout Title="📂 Document Sources" DataTestId="document-sources-card">
+    <HeaderActions>
+        <button type="button"
+                class="account-card__action-btn account-card__action-btn--primary"
+                data-testid="add-source-button"
+                @onclick="HandleAddSource">
+            + Add
+        </button>
+    </HeaderActions>
+    <ChildContent>
+        @if (IsLoading)
+        {
+            <div class="sources-skeleton" data-testid="sources-loading">
+                @for (var i = 0; i < 2; i++)
+                {
+                    <Skeleton Variant="row">
+                        <div class="skeleton--row-text">
+                            <Skeleton Variant="text-short" />
+                        </div>
+                        <Skeleton Variant="badge" />
+                        <Skeleton Variant="badge" Width="3rem" />
+                        <Skeleton Variant="btn" />
+                        <Skeleton Variant="btn" />
+                    </Skeleton>
+                }
+            </div>
+        }
+        else if (_sources.Count == 0)
+        {
+            <p class="sources-empty" data-testid="sources-empty">
+                No document sources linked.
+                <button type="button" class="sources-empty__link" @onclick="HandleAddSource">
+                    Add your first source to start studying
+                </button>
+            </p>
+        }
+        else
+        {
+            <div class="sources-list" data-testid="sources-list">
+                @foreach (var source in _sources)
+                {
+                    <SourceRow Source="source"
+                               OnRename="HandleRenameAsync"
+                               OnRemove="HandleRemoveAsync" />
+                }
+            </div>
+        }
+
+        @if (ErrorMessage is not null)
+        {
+            <p class="sources-error" data-testid="sources-error">@ErrorMessage</p>
+        }
+    </ChildContent>
+</CardLayout>
+
+@code {
+    private IReadOnlyList<SourceInfo> _sources = Array.Empty<SourceInfo>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync(
+            async () => _sources = await SourceService.ListSourcesAsync(),
+            "Failed to load document sources. Please try again.");
+    }
+
+    private async Task HandleRenameAsync((string SourceId, string DisplayName) args)
+    {
+        ErrorMessage = null;
+        var (sourceId, displayName) = args;
+
+        var result = await SourceService.UpdateSourceDisplayNameAsync(sourceId, displayName);
+
+        if (result.Success)
+        {
+            await LoadAsync(
+                async () => _sources = await SourceService.ListSourcesAsync(),
+                "Failed to load document sources. Please try again.");
+        }
+        else
+        {
+            ErrorMessage = result.ErrorMessage;
+        }
+    }
+
+    private async Task HandleRemoveAsync(string sourceId)
+    {
+        ErrorMessage = null;
+
+        var result = await SourceService.RemoveSourceAsync(sourceId);
+
+        if (result.Success)
+        {
+            await LoadAsync(
+                async () => _sources = await SourceService.ListSourcesAsync(),
+                "Failed to load document sources. Please try again.");
+        }
+        else
+        {
+            ErrorMessage = result.ErrorMessage;
+        }
+    }
+
+    private void HandleAddSource()
+    {
+        // TODO: Navigate to /account/sources/new (future phase)
+    }
+}

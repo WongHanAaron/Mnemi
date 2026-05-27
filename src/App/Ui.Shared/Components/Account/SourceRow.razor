@@ -1,0 +1,125 @@
+@inject IProviderIconService IconService
+@using Mnemi.Application.Ports
+
+<div class="source-row" data-testid="source-row">
+    <div class="source-row__info">
+        @if (!_isEditing)
+        {
+            <span class="source-row__name" data-testid="source-name-text">@Source.DisplayName</span>
+        }
+        else
+        {
+            <input type="text"
+                   class="source-row__input @(_errorMessage is not null ? "source-row__input--error" : "")"
+                   data-testid="source-name-input"
+                   @bind="_editValue"
+                   @bind:event="oninput"
+                   @onkeydown="HandleKeyDown"
+                   maxlength="101"
+                   autofocus />
+            @if (_errorMessage is not null)
+            {
+                <span class="source-row__error" data-testid="source-name-error">@_errorMessage</span>
+            }
+        }
+    </div>
+    <span class="source-row__provider-badge" data-testid="source-provider-badge">
+        @IconService.GetSourceProviderLabel(Source.ProviderName)
+    </span>
+    <div class="source-row__status-group">
+        <span class="source-row__status @(Source.IsAccessible ? "source-row__status--active" : "source-row__status--error")"
+              data-testid="source-status"
+              title="@(Source.IsAccessible ? null : Source.LastError)">
+            @(Source.IsAccessible ? "✅ Active" : "⚠️ Error")
+        </span>
+    </div>
+    <div class="source-row__actions">
+        @if (!_isEditing)
+        {
+            <button type="button"
+                    class="source-row__action-btn"
+                    data-testid="source-edit-button"
+                    @onclick="EnterEditMode">
+                Edit
+            </button>
+            <button type="button"
+                    class="source-row__action-btn source-row__action-btn--danger"
+                    data-testid="source-remove-button"
+                    @onclick="() => OnRemove.InvokeAsync(Source.SourceId)">
+                Remove
+            </button>
+        }
+        else
+        {
+            <button type="button"
+                    class="source-row__action-btn"
+                    data-testid="source-save-button"
+                    @onclick="SaveEdit">
+                Save
+            </button>
+            <button type="button"
+                    class="source-row__action-btn source-row__action-btn--secondary"
+                    data-testid="source-cancel-button"
+                    @onclick="CancelEdit">
+                Cancel
+            </button>
+        }
+    </div>
+</div>
+
+@code {
+    private bool _isEditing;
+    private string _editValue = string.Empty;
+    private string? _errorMessage;
+
+    [Parameter, EditorRequired]
+    public SourceInfo Source { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<(string SourceId, string DisplayName)> OnRename { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnRemove { get; set; }
+
+    private void EnterEditMode()
+    {
+        _editValue = Source.DisplayName;
+        _errorMessage = null;
+        _isEditing = true;
+    }
+
+    private void CancelEdit()
+    {
+        _editValue = Source.DisplayName;
+        _errorMessage = null;
+        _isEditing = false;
+    }
+
+    private async Task SaveEdit()
+    {
+        _errorMessage = null;
+
+        if (string.IsNullOrWhiteSpace(_editValue))
+        {
+            _errorMessage = "Source name is required.";
+            return;
+        }
+
+        if (_editValue.Length > ValidationConstants.MaxSourceNameLength)
+        {
+            _errorMessage = $"Source name must be {ValidationConstants.MaxSourceNameLength} characters or less.";
+            return;
+        }
+
+        _isEditing = false;
+        await OnRename.InvokeAsync((Source.SourceId, _editValue.Trim()));
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key is "Enter")
+            await SaveEdit();
+        else if (e.Key is "Escape")
+            CancelEdit();
+    }
+}

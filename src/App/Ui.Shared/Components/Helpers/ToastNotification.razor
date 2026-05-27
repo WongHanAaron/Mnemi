@@ -1,0 +1,39 @@
+@if (_visible)
+{
+    <div class="save-toast @_cssClass" data-testid="save-toast" role="status">
+        @Message
+    </div>
+}
+
+@code {
+    private bool _visible;
+    private string _message = string.Empty;
+    private string _cssClass = string.Empty;
+
+    /// <summary>
+    /// Duration in milliseconds before auto-dismiss. Defaults to 2500.
+    /// </summary>
+    [Parameter]
+    public int DurationMs { get; set; } = 2500;
+
+    /// <summary>
+    /// Current message displayed in the toast. Empty when not visible.
+    /// </summary>
+    public string Message => _visible ? _message : string.Empty;
+
+    /// <summary>
+    /// Shows the toast with the given message. Auto-dismisses after DurationMs.
+    /// </summary>
+    public async Task ShowAsync(string message, string? cssClass = null)
+    {
+        _message = message;
+        _cssClass = cssClass ?? string.Empty;
+        _visible = true;
+        StateHasChanged();
+
+        await Task.Delay(DurationMs);
+
+        _visible = false;
+        StateHasChanged();
+    }
+}
