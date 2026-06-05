@@ -1,35 +1,36 @@
 @using Ui.Shared.Models.Home
 
-<article class="home-deck-card" data-testid="deck-card-@SafeDeckId">
-    <div class="home-deck-card__cover" aria-hidden="true">
-        @if (string.IsNullOrWhiteSpace(Model.ArtworkToken))
-        {
-            <span class="home-deck-card__cover-fallback">No Art</span>
-        }
-        else
-        {
-            <span class="home-deck-card__cover-token">@Model.ArtworkToken</span>
-        }
-    </div>
-
-    <div class="home-deck-card__content">
-        <p class="home-deck-card__title">@DisplayTitle</p>
-        <p class="home-deck-card__subtitle">@DisplaySubtitle</p>
-
-        <div class="home-deck-card__meta">
-            <span class="home-deck-card__status">@DisplayStatus</span>
-            <span class="home-deck-card__progress">@DisplayProgress</span>
-        </div>
-
-        <button
-            type="button"
-            class="home-deck-card__action"
-            data-testid="deck-card-action-@SafeDeckId"
-            @onclick="HandleActionAsync">
-            @ActionLabel
-        </button>
-    </div>
-</article>
+<div data-testid="@($"deck-card-{SafeDeckId}")">
+    <BbCard Class="cursor-pointer hover:border-[var(--clay-accent)] transition-colors">
+        <BbCardHeader>
+            <BbCardTitle>@DisplayTitle</BbCardTitle>
+        </BbCardHeader>
+        <BbCardContent>
+            <div class="flex items-start gap-4">
+                <BbAvatar Class="home-deck-card__cover">
+                    <BbAvatarFallback>
+                        @(string.IsNullOrWhiteSpace(Model.ArtworkToken) ? "NA" : Model.ArtworkToken)
+                    </BbAvatarFallback>
+                </BbAvatar>
+                <div class="flex-1 min-w-0">
+                    <p class="home-deck-card__subtitle">@DisplaySubtitle</p>
+                    <div class="home-deck-card__meta">
+                        <BbBadge Variant="BadgeVariant.Secondary">@DisplayStatus</BbBadge>
+                        <span class="home-deck-card__progress">@DisplayProgress</span>
+                    </div>
+                </div>
+            </div>
+        </BbCardContent>
+        <BbCardFooter>
+            <BbButton Variant="ButtonVariant.Ghost"
+                      Size="ButtonSize.Small"
+                      data-testid="@($"deck-card-action-{SafeDeckId}")"
+                      OnClick="HandleActionAsync">
+                @ActionLabel
+            </BbButton>
+        </BbCardFooter>
+    </BbCard>
+</div>
 
 @code {
     [Parameter]

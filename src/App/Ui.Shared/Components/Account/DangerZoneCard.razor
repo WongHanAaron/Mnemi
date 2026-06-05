@@ -2,8 +2,12 @@
 @inject IAuthService AuthService
 @inject NavigationManager Navigation
 
-<CardLayout Title="⚠️ Danger Zone" Danger="true" DataTestId="danger-zone-card">
-    <ChildContent>
+<div data-testid="danger-zone-card">
+    <BbCard Class="border-[var(--destructive)]/25">
+    <BbCardHeader>
+        <BbCardTitle Class="text-[var(--destructive)]">⚠️ Danger Zone</BbCardTitle>
+    </BbCardHeader>
+    <BbCardContent>
         <p class="danger-zone__description">
             Delete your account and all associated data.
         </p>
@@ -11,33 +15,73 @@
             This action cannot be undone.
         </p>
 
-        <button type="button"
-                class="danger-zone__trigger-btn"
-                data-testid="delete-account-button"
-                @onclick="OpenConfirmDialog">
+        <BbButton Variant="ButtonVariant.Destructive"
+                  data-testid="delete-account-button"
+                  OnClick="OpenConfirmDialog">
             Delete My Account
-        </button>
+        </BbButton>
+
+        @if (_showDialog)
+        {
+            <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60" data-testid="delete-dialog-overlay" @onclick="CloseDialog">
+                <div style="background: #171717" class="border border-[var(--border)] rounded-[var(--radius)] p-6 max-w-md w-full flex flex-col gap-4" data-testid="delete-dialog" @onclick:stopPropagation="true">
+                    <h2 class="text-lg font-bold text-[var(--destructive)] text-center">⚠️ Delete Account</h2>
+                    <div class="bg-[rgba(239,68,68,0.08)] border border-[rgba(239,68,68,0.2)] rounded-lg p-3 text-sm text-[var(--foreground)]" data-testid="delete-dialog-warning">
+                        <p>This will permanently delete your account and ALL data.</p>
+                        <p class="text-[var(--destructive)] mt-1">This action <strong>CANNOT</strong> be undone.</p>
+                    </div>
+                    <label class="text-sm font-medium text-[var(--foreground)]" for="delete-confirm-email">
+                        Type your email to confirm:
+                    </label>
+                    <BbInput Type="InputType.Text"
+                             id="delete-confirm-email"
+                             data-testid="delete-confirm-email-input"
+                             Placeholder="@_email"
+                             @bind-Value="_enteredEmail"
+                             Class="@(_mismatch ? "border-[var(--destructive)]" : "")" />
+                    @if (_mismatch && !string.IsNullOrEmpty(_enteredEmail))
+                    {
+                        <p class="text-xs text-[var(--destructive)] -mt-3" data-testid="delete-email-mismatch">
+                            Email does not match
+                        </p>
+                    }
+                    <div class="flex gap-3 justify-end">
+                        <BbButton Variant="ButtonVariant.Outline"
+                                  data-testid="delete-cancel-button"
+                                  OnClick="CloseDialog">
+                            Cancel
+                        </BbButton>
+                        <BbButton Variant="ButtonVariant.Destructive"
+                                  Disabled="@(!_isConfirmed || _isDeleting)"
+                                  OnClick="HandleDeleteAccountAsync"
+                                  data-testid="delete-confirm-button">
+                            @(_isDeleting ? "Deleting..." : "⛔ Permanently Delete Account")
+                        </BbButton>
+                    </div>
+                </div>
+            </div>
+        }
 
         @if (_errorMessage is not null)
         {
             <p class="danger-zone__error" data-testid="delete-error">@_errorMessage</p>
         }
-    </ChildContent>
-</CardLayout>
-
-@if (_showDialog)
-{
-    <ConfirmDeleteDialog ExpectedEmail="@_email"
-                         IsDeleting="@_isDeleting"
-                         OnConfirm="HandleDeleteAccountAsync"
-                         OnCancel="CloseDialog" />
-}
+    </BbCardContent>
+    </BbCard>
+</div>
 
 @code {
     private bool _showDialog;
     private bool _isDeleting;
     private string? _errorMessage;
     private string _email = "student@mnemi.app";
+    private string _enteredEmail = string.Empty;
+
+    private bool _isConfirmed =>
+        string.Equals(_enteredEmail.Trim(), _email.Trim(), StringComparison.OrdinalIgnoreCase);
+
+    private bool _mismatch =>
+        !string.IsNullOrEmpty(_enteredEmail) && !_isConfirmed;
 
     protected override async Task OnInitializedAsync()
     {
@@ -51,6 +95,7 @@
     private void OpenConfirmDialog()
     {
         _errorMessage = null;
+        _enteredEmail = string.Empty;
         _showDialog = true;
     }
 

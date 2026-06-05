@@ -1,6 +1,6 @@
 @namespace Ui.Shared.Components.Layout
 
-<div class="sidebar-section" data-testid="sidebar-section-@SectionId">
+<div class="sidebar-section @Class" data-testid="sidebar-section-@SectionId">
     <div class="sidebar-section__header"
          role="button"
          aria-expanded="@IsExpanded.ToString().ToLowerInvariant()"
@@ -9,7 +9,6 @@
          @onclick="Toggle">
         @if (PinIcon)
         {
-            @* Pin icon for pinned decks *@
             <svg class="sidebar-section__pinicon @(IsExpanded ? "sidebar-section__pinicon--open" : "")"
                  xmlns="http://www.w3.org/2000/svg"
                  viewBox="0 0 24 24"
@@ -47,46 +46,16 @@
 </div>
 
 @code {
-    /// <summary>Unique identifier for this section (for aria attributes).</summary>
-    [Parameter]
-    public string SectionId { get; set; } = "section";
-
-    /// <summary>The label displayed in the section header.</summary>
-    [Parameter]
-    public string Label { get; set; } = "Section";
-
-    /// <summary>Whether to show a pin icon instead of the chevron toggle.</summary>
-    [Parameter]
-    public bool PinIcon { get; set; }
-
-    /// <summary>Whether the section starts expanded.</summary>
-    [Parameter]
-    public bool InitiallyExpanded { get; set; } = true;
-
-    /// <summary>The content inside the collapsible section.</summary>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string SectionId { get; set; } = "section";
+    [Parameter] public string Label { get; set; } = "Section";
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public bool PinIcon { get; set; }
+    [Parameter] public bool InitiallyExpanded { get; set; } = true;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     private bool _isExpanded = true;
-    private bool IsExpanded
-    {
-        get => _isExpanded;
-        set
-        {
-            if (_isExpanded != value)
-            {
-                _isExpanded = value;
-            }
-        }
-    }
+    private bool IsExpanded { get => _isExpanded; set { if (_isExpanded != value) _isExpanded = value; } }
 
-    protected override void OnInitialized()
-    {
-        _isExpanded = InitiallyExpanded;
-    }
-
-    private void Toggle()
-    {
-        IsExpanded = !IsExpanded;
-    }
+    protected override void OnInitialized() { _isExpanded = InitiallyExpanded; }
+    private void Toggle() { IsExpanded = !IsExpanded; }
 }

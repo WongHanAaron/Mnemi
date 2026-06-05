@@ -1,30 +1,32 @@
 @inherits Ui.Shared.Components.Helpers.AsyncDataComponent
 @inject IUserService UserService
 
-<CardLayout Title="🔗 Linked Providers" DataTestId="linked-providers-card">
-    <HeaderActions>
-        <button type="button"
-                class="account-card__action-btn account-card__action-btn--primary"
-                data-testid="link-new-provider-button"
-                @onclick="HandleLinkNew">
+<div data-testid="linked-providers-card">
+    <BbCard>
+    <BbCardHeader Class="flex-row items-center justify-between">
+        <BbCardTitle>Linked Providers</BbCardTitle>
+        <BbButton Variant="ButtonVariant.Default"
+                  Size="ButtonSize.Small"
+                  data-testid="link-new-provider-button"
+                  OnClick="HandleLinkNew">
             + Link New
-        </button>
-    </HeaderActions>
-    <ChildContent>
+        </BbButton>
+    </BbCardHeader>
+    <BbCardContent>
         @if (IsLoading)
         {
             <div class="providers-skeleton" data-testid="providers-loading">
                 @for (var i = 0; i < 2; i++)
                 {
-                    <Skeleton Variant="row">
-                        <Skeleton Variant="avatar" />
-                        <div class="skeleton--row-text">
-                            <Skeleton Variant="text-short" />
-                            <Skeleton Variant="text" Width="50%" />
+                    <div class="flex items-center gap-3 py-3 border-b border-[var(--border)]">
+                        <BbSkeleton Shape="SkeletonShape.Circular" Class="w-7 h-7" />
+                        <div class="flex-1 flex flex-col gap-1.5">
+                            <BbSkeleton Shape="SkeletonShape.Rectangular" Class="w-3/5 h-3.5" />
+                            <BbSkeleton Shape="SkeletonShape.Rectangular" Class="w-2/5 h-3" />
                         </div>
-                        <Skeleton Variant="badge" />
-                        <Skeleton Variant="btn" />
-                    </Skeleton>
+                        <BbSkeleton Shape="SkeletonShape.Rectangular" Class="w-16 h-5" />
+                        <BbSkeleton Shape="SkeletonShape.Rectangular" Class="w-14 h-6" />
+                    </div>
                 }
             </div>
         }
@@ -32,9 +34,9 @@
         {
             <p class="providers-empty" data-testid="providers-empty">
                 No providers linked.
-                <button type="button" class="providers-empty__link" @onclick="HandleLinkNew">
+                <span class="providers-empty__link" @onclick="HandleLinkNew" role="button" tabindex="0">
                     Link your first provider
-                </button>
+                </span>
             </p>
         }
         else
@@ -53,8 +55,9 @@
         {
             <p class="providers-error" data-testid="providers-error">@ErrorMessage</p>
         }
-    </ChildContent>
-</CardLayout>
+    </BbCardContent>
+    </BbCard>
+</div>
 
 @code {
     private IReadOnlyList<ProviderInfo> _providers = Array.Empty<ProviderInfo>();

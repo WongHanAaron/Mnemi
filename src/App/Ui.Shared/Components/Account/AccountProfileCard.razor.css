@@ -1,6 +1,7 @@
 /* ==========================================================================
    AccountProfileCard — Read/edit profile section
    Card/button/base styles are shared via account-shared.css
+   Blueprint BbInput handles input styling; custom input CSS removed.
    ========================================================================== */
 
 /* Field */
@@ -27,33 +28,6 @@
     color: var(--muted-foreground, #b0b0b0);
 }
 
-/* Input */
-.account-field__input {
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.5rem;
-    border: 1px solid var(--border);
-    background: var(--background);
-    color: var(--foreground);
-    font-size: 0.9375rem;
-    font-family: inherit;
-    transition: border-color 0.15s ease;
-    width: 100%;
-    max-width: 24rem;
-}
-
-.account-field__input:focus {
-    outline: none;
-    border-color: var(--clay-accent);
-}
-
-.account-field__input--error {
-    border-color: var(--destructive, #ef4444);
-}
-
-.account-field__input--error:focus {
-    border-color: var(--destructive, #ef4444);
-}
-
 /* Error */
 .account-field__error {
     font-size: 0.8125rem;
@@ -61,13 +35,3 @@
     margin-top: 0.25rem;
 }
 
-/* ---- Responsive ---- */
-@media (max-width: 767px) {
-    .account-card {
-        padding: 1rem;
-    }
-
-    .account-field__input {
-        max-width: 100%;
-    }
-}

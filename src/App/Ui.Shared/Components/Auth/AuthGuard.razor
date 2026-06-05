@@ -5,7 +5,8 @@
 @if (_isCheckingAuth)
 {
     <div class="auth-guard-loading" data-testid="auth-guard-loading">
-        <p>Checking authentication...</p>
+        <BbSkeleton Shape="SkeletonShape.Rectangular" Class="w-64 h-4" />
+        <BbSkeleton Shape="SkeletonShape.Rectangular" Class="w-48 h-4 mt-3" />
     </div>
 }
 else if (_isAuthenticated)
@@ -16,9 +17,11 @@ else
 {
     <div class="auth-guard-redirect" data-testid="auth-guard-redirect">
         <p>You need to sign in to access this page.</p>
-        <a href="@RedirectTo" class="auth-guard-login-link" data-testid="auth-guard-login-link">
+        <BbButton Variant="ButtonVariant.Link"
+                  data-testid="auth-guard-login-link"
+                  OnClick="NavigateToLogin">
             Sign in
-        </a>
+        </BbButton>
     </div>
 }
 
@@ -58,4 +61,6 @@ else
             StateHasChanged();
         }
     }
+
+    private void NavigateToLogin() => Navigation.NavigateTo(RedirectTo);
 }

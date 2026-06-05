@@ -1,0 +1,36 @@
+@namespace Ui.Shared.Components.Layout
+
+@* Shared nav button wrapper — provides consistent hover via scoped ::deep CSS.
+   The wrapper <div> ensures the Blazor scope attribute is on a parent element,
+   so ::deep button:hover compiles to [b-xxx] button:hover (parent has scope). *@
+<div>
+    <BbButton Variant="ButtonVariant.Ghost"
+              Class="@($"w-full justify-start {Class}")"
+              data-testid="@TestId"
+              title="@Title"
+              OnClick="@OnClick"
+              Attributes="@AdditionalAttributes">
+        @ChildContent
+    </BbButton>
+</div>
+
+@code {
+    /// <summary>Additional CSS classes appended after the base ones.</summary>
+    [Parameter] public string? Class { get; set; }
+
+    /// <summary>data-testid for E2E tests.</summary>
+    [Parameter] public string? TestId { get; set; }
+
+    /// <summary>HTML title attribute (tooltip).</summary>
+    [Parameter] public string? Title { get; set; }
+
+    /// <summary>Click handler.</summary>
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    /// <summary>Button content (icons, labels, etc.).</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Catch-all for additional attributes passed to BbButton.</summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

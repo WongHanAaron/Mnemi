@@ -56,28 +56,6 @@
     color: var(--clay-muted);
 }
 
-/* ---- Primary Action Button ---- */
-.home-primary-action {
-    border: none;
-    border-radius: 50px;
-    background: linear-gradient(135deg, var(--clay-accent), #c4b5fd);
-    color: #171717;
-    padding: 0.95rem 1.2rem;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(167, 139, 250, 0.3);
-    transition: all 0.25s ease;
-}
-
-.home-primary-action:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(167, 139, 250, 0.4);
-}
-
-.home-primary-action:active {
-    transform: translateY(0);
-}
-
 /* ---- Section Common ---- */
 .home-section {
     padding: 1.2rem 1.35rem 1.4rem;

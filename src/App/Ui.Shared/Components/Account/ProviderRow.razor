@@ -10,18 +10,19 @@
             <span class="provider-row__connected-as">@Provider.ConnectedAs</span>
         </div>
     </div>
-    <span class="provider-row__status @(Provider.IsValid ? "provider-row__status--active" : "provider-row__status--expired")"
-          data-testid="provider-status">
-        @(Provider.IsValid ? "✅ Active" : "⚠️ Expired")
+    <span data-testid="provider-status">
+        <BbBadge Variant="@(Provider.IsValid ? BadgeVariant.Default : BadgeVariant.Secondary)">
+            @(Provider.IsValid ? "✅ Active" : "⚠️ Expired")
+        </BbBadge>
     </span>
-    <button type="button"
-            class="provider-row__unlink-btn"
-            data-testid="provider-unlink-button"
-            disabled="@(!CanUnlink)"
-            title="@(CanUnlink ? $"Unlink {Provider.ProviderName}" : "Must have at least one linked provider")"
-            @onclick="() => OnUnlink.InvokeAsync(Provider.ConnectionId)">
+    <BbButton Variant="ButtonVariant.Ghost"
+              Size="ButtonSize.Small"
+              data-testid="provider-unlink-button"
+              Disabled="@(!CanUnlink)"
+              title="@(CanUnlink ? $"Unlink {Provider.ProviderName}" : "Must have at least one linked provider")"
+              OnClick="() => OnUnlink.InvokeAsync(Provider.ConnectionId)">
         Unlink
-    </button>
+    </BbButton>
 </div>
 
 @code {

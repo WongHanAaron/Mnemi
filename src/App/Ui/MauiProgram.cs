@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using BlazorBlueprint.Components;
 using Mnemi.Application;
 using Mnemi.Application.Features.FeatureFlags;
 using Mnemi.Application.Home;
@@ -24,6 +25,9 @@ namespace Ui
 
             // Register Application layer services (IGetPinnedDecks, etc.)
             builder.Services.AddApplicationServices();
+
+            // Register BlazorBlueprint.Components services (portal, toast, dialog, focus, positioning)
+            builder.Services.AddBlazorBlueprintComponents();
 
             // Add device-specific services used by the Ui.Shared project
             builder.Services.AddSingleton<IFormFactor, FormFactor>();

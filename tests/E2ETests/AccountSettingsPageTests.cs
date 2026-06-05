@@ -321,7 +321,7 @@ public class AccountSettingsPageTests : PageTest
         await Page.WaitForSelectorAsync("[data-testid=\"linked-providers-card\"]");
 
         // Card header
-        await Expect(Page.Locator("[data-testid=\"linked-providers-card\"] h2"))
+        await Expect(Page.Locator("[data-testid=\"linked-providers-card\"] h3"))
             .ToContainTextAsync("Linked Providers");
 
         // Link New button
@@ -459,7 +459,7 @@ public class AccountSettingsPageTests : PageTest
         await Page.GotoAsync(Url("/account"));
         await Page.WaitForSelectorAsync("[data-testid=\"document-sources-card\"]");
 
-        await Expect(Page.Locator("[data-testid=\"document-sources-card\"] h2"))
+        await Expect(Page.Locator("[data-testid=\"document-sources-card\"] h3"))
             .ToContainTextAsync("Document Sources");
 
         await Expect(Page.Locator("[data-testid=\"add-source-button\"]"))
@@ -570,7 +570,7 @@ public class AccountSettingsPageTests : PageTest
         await Page.GotoAsync(Url("/account"));
         await Page.WaitForSelectorAsync("[data-testid=\"danger-zone-card\"]");
 
-        await Expect(Page.Locator("[data-testid=\"danger-zone-card\"] h2"))
+        await Expect(Page.Locator("[data-testid=\"danger-zone-card\"] h3"))
             .ToContainTextAsync("Danger Zone");
 
         await Expect(Page.Locator("[data-testid=\"danger-zone-card\"]"))

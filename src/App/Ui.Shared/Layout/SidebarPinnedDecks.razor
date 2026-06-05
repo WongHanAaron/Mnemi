@@ -2,7 +2,7 @@
 @using Ui.Shared.Models
 @using Mnemi.Application.Models
 
-<Ui.Shared.Components.Layout.SidebarSection SectionId="pinned-decks" Label="Pinned Decks" InitiallyExpanded="true" PinIcon="true">
+<Ui.Shared.Components.Layout.SidebarSection SectionId="pinned-decks" Label="Pinned Decks" InitiallyExpanded="true" PinIcon="true" Class="@Class">
     @if (PinnedDecks is null || PinnedDecks.Count == 0)
     {
         <div class="pinned-decks__empty" data-testid="pinned-decks-empty">
@@ -14,13 +14,17 @@
         <ul class="pinned-decks__list" data-testid="pinned-decks-list">
             @foreach (var deck in PinnedDecks)
             {
-                <li class="pinned-decks__item"
-                    data-testid="pinned-deck-@deck.Id"
-                    title="@deck.Name"
-                    @onclick="() => OnDeckSelected.InvokeAsync(deck)"
-                    @onclick:preventDefault>
-                    <span class="pinned-decks__icon" aria-hidden="true">@GetInitials(deck.Name)</span>
-                    <span class="pinned-decks__name">@deck.Name</span>
+                <li class="pinned-deck-btn">
+                    <Ui.Shared.Components.Layout.SidebarNavButton
+                        Class="gap-2"
+                        TestId="@($"pinned-deck-{deck.Id}")"
+                        Title="@deck.Name"
+                        OnClick="() => OnDeckSelected.InvokeAsync(deck)">
+                        <BbAvatar Class="w-6 h-6">
+                            <BbAvatarFallback>@GetInitials(deck.Name)</BbAvatarFallback>
+                        </BbAvatar>
+                        <span class="pinned-decks__name">@deck.Name</span>
+                    </Ui.Shared.Components.Layout.SidebarNavButton>
                 </li>
             }
         </ul>
@@ -31,6 +35,10 @@
     /// <summary>The user's pinned decks, or empty if none.</summary>
     [Parameter]
     public IReadOnlyList<PinnedDeckItem> PinnedDecks { get; set; } = Array.Empty<PinnedDeckItem>();
+
+    /// <summary>Optional CSS classes forwarded to the inner SidebarSection.</summary>
+    [Parameter]
+    public string? Class { get; set; }
 
     /// <summary>Callback when a pinned deck is clicked.</summary>
     [Parameter]

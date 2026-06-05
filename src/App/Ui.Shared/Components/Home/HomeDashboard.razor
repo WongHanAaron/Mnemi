@@ -10,13 +10,13 @@
                 <h1 class="home-title">Welcome back, @DisplayName</h1>
                 <p class="home-subtitle">Keep your momentum going with today&apos;s decks.</p>
             </div>
-            <button
-                type="button"
-                class="home-primary-action"
-                data-testid="home-primary-study-action"
-                @onclick="() => OnPrimaryStudyAction.InvokeAsync(Model.PrimaryStudyAction)">
+            <BbButton Variant="ButtonVariant.Default"
+                      Size="ButtonSize.Large"
+                      Class="bg-linear-to-r from-[var(--clay-accent)] to-[#c4b5fd] text-[#171717] rounded-full font-bold"
+                      data-testid="home-primary-study-action"
+                      OnClick="() => OnPrimaryStudyAction.InvokeAsync(Model.PrimaryStudyAction)">
                 @Model.PrimaryStudyAction.Label
-            </button>
+            </BbButton>
         </section>
 
         <section class="home-section" data-testid="home-quick-stats">
@@ -78,11 +78,11 @@
     {
         if (Model.QuickStatsState == SectionDataState.Loading)
         {
-            builder.OpenElement(0, "p");
-            builder.AddAttribute(1, "class", "home-state-message");
-            builder.AddAttribute(2, "data-testid", "home-state-loading-quick-stats");
-            builder.AddContent(3, "Loading quick stats...");
-            builder.CloseElement();
+            builder.OpenComponent<BbSkeleton>(0);
+            builder.AddAttribute(1, "Shape", SkeletonShape.Rectangular);
+            builder.AddAttribute(2, "Class", "w-full h-16");
+            builder.AddAttribute(3, "data-testid", "home-state-loading-quick-stats");
+            builder.CloseComponent();
             return;
         }
 
@@ -127,11 +127,15 @@
     {
         if (state == SectionDataState.Loading)
         {
-            builder.OpenElement(0, "p");
-            builder.AddAttribute(1, "class", "home-state-message");
-            builder.AddAttribute(2, "data-testid", $"home-state-loading-{sectionId}");
-            builder.AddContent(3, "Loading decks...");
-            builder.CloseElement();
+            builder.OpenComponent<BbSkeleton>(0);
+            builder.AddAttribute(1, "Shape", SkeletonShape.Rectangular);
+            builder.AddAttribute(2, "Class", "w-full h-4");
+            builder.AddAttribute(3, "data-testid", $"home-state-loading-{sectionId}");
+            builder.CloseComponent();
+            builder.OpenComponent<BbSkeleton>(4);
+            builder.AddAttribute(5, "Shape", SkeletonShape.Rectangular);
+            builder.AddAttribute(6, "Class", "w-3/4 h-4 mt-3");
+            builder.CloseComponent();
             return;
         }
 

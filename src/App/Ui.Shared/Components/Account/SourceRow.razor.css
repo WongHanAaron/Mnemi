@@ -26,27 +26,6 @@
     color: var(--foreground, #fafafa);
 }
 
-.source-row__input {
-    padding: 0.375rem 0.5rem;
-    border-radius: 0.375rem;
-    border: 1px solid var(--border);
-    background: var(--background);
-    color: var(--foreground);
-    font-size: 0.875rem;
-    font-family: inherit;
-    width: 100%;
-    max-width: 16rem;
-}
-
-.source-row__input:focus {
-    outline: none;
-    border-color: var(--clay-accent);
-}
-
-.source-row__input--error {
-    border-color: var(--destructive);
-}
-
 .source-row__error {
     display: block;
     font-size: 0.75rem;
@@ -54,83 +33,14 @@
     margin-top: 0.25rem;
 }
 
-.source-row__provider-badge {
-    font-size: 0.75rem;
-    color: var(--muted-foreground);
-    white-space: nowrap;
-}
-
-.source-row__provider-badge-inner {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-.source-row__provider-badge ::deep .provider-icon {
-    display: block;
-    flex-shrink: 0;
-}
-
 .source-row__status-group {
     display: flex;
     align-items: center;
 }
 
-.source-row__status {
-    font-size: 0.75rem;
-    font-weight: 500;
-    padding: 0.1875rem 0.5rem;
-    border-radius: 0.375rem;
-    white-space: nowrap;
-    cursor: default;
-}
-
-.source-row__status--active {
-    background: rgba(34, 197, 94, 0.12);
-    color: #4ade80;
-}
-
-.source-row__status--error {
-    background: rgba(251, 191, 36, 0.12);
-    color: #fbbf24;
-}
-
 .source-row__actions {
     display: flex;
     gap: 0.5rem;
-}
-
-.source-row__action-btn {
-    padding: 0.25rem 0.625rem;
-    border-radius: 0.375rem;
-    border: 1px solid var(--border, rgba(255, 255, 255, 0.10));
-    background: transparent;
-    color: var(--muted-foreground, #b0b0b0);
-    font-size: 0.75rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;
-    white-space: nowrap;
-}
-
-.source-row__action-btn:hover {
-    background: var(--secondary, #3d3d3d);
-    color: var(--foreground, #fafafa);
-}
-
-.source-row__action-btn--danger:hover {
-    background: rgba(239, 68, 68, 0.12);
-    color: var(--destructive, #ef4444);
-    border-color: rgba(239, 68, 68, 0.3);
-}
-
-.source-row__action-btn--secondary:hover {
-    background: rgba(255, 255, 255, 0.06);
-}
-
-.source-row__action-btn:focus-visible {
-    outline: 2px solid var(--clay-accent, #a78bfa);
-    outline-offset: 2px;
 }
 
 /* ---- Responsive — mobile ---- */

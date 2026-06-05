@@ -9,7 +9,9 @@
      @onclick="NavigateToAccount"
      @onkeydown="HandleKeyDown">
     <div class="sidebar-user__avatar" aria-hidden="true">
-        @Initials
+        <BbAvatar Size="AvatarSize.Small">
+            <BbAvatarFallback>@Initials</BbAvatarFallback>
+        </BbAvatar>
     </div>
     <div class="sidebar-user__info">
         <div class="sidebar-user__name">@UserName</div>

@@ -1,0 +1,14 @@
+/* ==========================================================================
+   SidebarNavButton — Shared nav button styles
+   Wrapper <div> is the root → scope is on the parent.
+   ::deep compiles to [b-xxx] descendant (parent has scope).
+   ========================================================================== */
+
+::deep button,
+::deep button * {
+    color: var(--clay-accent);
+}
+
+::deep button:hover {
+    background: rgba(255, 255, 255, 0.08);
+}

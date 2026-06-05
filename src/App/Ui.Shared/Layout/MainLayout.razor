@@ -6,6 +6,7 @@
 @using Ui.Shared.Models
 @using Ui.Shared.Components.Layout
 @using Mnemi.Application.Models
+@using BlazorBlueprint.Primitives
 
 @if (_isCheckingAuth)
 {
@@ -37,6 +38,8 @@ else
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+<BbPortalHost />
 
 @code {
     private bool _isCheckingAuth = true;

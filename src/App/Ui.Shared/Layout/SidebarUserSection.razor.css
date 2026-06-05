@@ -27,17 +27,7 @@
 }
 
 .sidebar-user__avatar {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 0.5rem;
-    background: var(--clay-accent, #f6ad55);
-    display: flex;
-    align-items: center;
-    justify-content: center;
     flex-shrink: 0;
-    font-size: 0.875rem;
-    font-weight: 700;
-    color: #171717;
 }
 
 .sidebar-user__info {
@@ -50,7 +40,7 @@
 .sidebar-user__name {
     font-size: 0.8125rem;
     font-weight: 600;
-    color: var(--sidebar-foreground, #fafafa);
+    color: var(--clay-accent, #a78bfa);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -61,7 +51,7 @@
     transform: translateX(-4px);
     transition: opacity 0.15s ease, transform 0.15s ease;
     flex-shrink: 0;
-    color: var(--sidebar-foreground, #fafafa);
+    color: var(--clay-accent, #a78bfa);
 }
 
 .sidebar-user:hover .sidebar-user__arrow {

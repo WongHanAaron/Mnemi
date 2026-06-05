@@ -1,13 +1,21 @@
 @using Ui.Shared.Models.Home
 
-<article class="home-quick-stat home-quick-stat--@TrendClass" data-testid="quick-stat-@Metric.MetricId">
-    <p class="home-quick-stat__label">@Metric.Label</p>
-    <p class="home-quick-stat__value">@DisplayValue</p>
-    @if (!string.IsNullOrWhiteSpace(Metric.TrendText) && Metric.State == SectionDataState.Populated)
-    {
-        <p class="home-quick-stat__trend">@Metric.TrendText</p>
-    }
-</article>
+<div data-testid="@($"quick-stat-{Metric.MetricId}")">
+    <BbCard Class="text-center">
+        <BbCardContent>
+            <div class="text-2xl font-bold">@DisplayValue</div>
+            <div class="text-sm text-[var(--muted-foreground)]">@Metric.Label</div>
+            @if (!string.IsNullOrWhiteSpace(Metric.TrendText) && Metric.State == SectionDataState.Populated)
+            {
+                <span>
+                    <BbBadge Variant="@(Metric.TrendDirection == MetricTrendDirection.Up ? BadgeVariant.Default : BadgeVariant.Destructive)">
+                        @Metric.TrendText
+                    </BbBadge>
+                </span>
+            }
+        </BbCardContent>
+    </BbCard>
+</div>
 
 @code {
     [Parameter]
@@ -20,11 +28,4 @@
         State: SectionDataState.MissingData);
 
     private string DisplayValue => Metric.State == SectionDataState.MissingData ? "Unavailable" : Metric.ValueText;
-
-    private string TrendClass => Metric.TrendDirection switch
-    {
-        MetricTrendDirection.Up => "up",
-        MetricTrendDirection.Down => "down",
-        _ => "flat"
-    };
 }

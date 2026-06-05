@@ -1,37 +1,40 @@
 @inject IUserService UserService
+@inject ToastService ToastService
 @using Mnemi.Application.Ports
 
-<CardLayout Title="👤 Profile" DataTestId="account-profile-card">
-    <HeaderActions>
+<div data-testid="account-profile-card">
+    <BbCard>
+    <BbCardHeader Class="flex-row items-center justify-between">
+        <BbCardTitle>Profile</BbCardTitle>
         @if (!_isEditing)
         {
-            <button type="button"
-                    class="account-card__action-btn"
-                    data-testid="profile-edit-button"
-                    @onclick="EnterEditMode">
+            <BbButton Variant="ButtonVariant.Outline"
+                      Size="ButtonSize.Small"
+                      data-testid="profile-edit-button"
+                      OnClick="EnterEditMode">
                 Edit
-            </button>
+            </BbButton>
         }
         else
         {
-            <div class="account-card__action-group">
-                <button type="button"
-                        class="account-card__action-btn account-card__action-btn--secondary"
-                        data-testid="profile-cancel-button"
-                        @onclick="CancelEdit">
+            <div class="flex gap-2">
+                <BbButton Variant="ButtonVariant.Ghost"
+                          Size="ButtonSize.Small"
+                          data-testid="profile-cancel-button"
+                          OnClick="CancelEdit">
                     Cancel
-                </button>
-                <button type="button"
-                        class="account-card__action-btn"
-                        data-testid="profile-save-button"
-                        disabled="@_isSaving"
-                        @onclick="SaveEditAsync">
+                </BbButton>
+                <BbButton Variant="ButtonVariant.Default"
+                          Size="ButtonSize.Small"
+                          data-testid="profile-save-button"
+                          Disabled="@_isSaving"
+                          OnClick="SaveEditAsync">
                     @(_isSaving ? "Saving..." : "Save")
-                </button>
+                </BbButton>
             </div>
         }
-    </HeaderActions>
-    <ChildContent>
+    </BbCardHeader>
+    <BbCardContent>
         <div class="account-field">
             <label class="account-field__label" for="profile-display-name">Display Name</label>
             @if (!_isEditing)
@@ -43,15 +46,13 @@
             }
             else
             {
-                <input id="profile-display-name"
-                       type="text"
-                       class="account-field__input @(_errorMessage is not null ? "account-field__input--error" : "")"
-                       data-testid="profile-display-name-input"
-                       @bind="_editValue"
-                       @bind:event="oninput"
-                       @onkeydown="HandleKeyDown"
-                       maxlength="101"
-                       autofocus />
+                <BbInput Type="InputType.Text"
+                         @bind-Value="_editValue"
+                         data-testid="profile-display-name-input"
+                         @onkeydown="HandleKeyDown"
+                         MaxLength="101"
+                         autofocus
+                         Class="@(_errorMessage is not null ? "border-[var(--destructive)]" : "")" />
                 @if (_errorMessage is not null)
                 {
                     <span class="account-field__error"
@@ -77,13 +78,11 @@
                 @MemberSinceFormatted
             </span>
         </div>
-    </ChildContent>
-</CardLayout>
-
-<ToastNotification @ref="_toastRef" />
+    </BbCardContent>
+    </BbCard>
+</div>
 
 @code {
-    private ToastNotification _toastRef = null!;
     private bool _isEditing;
     private bool _isSaving;
     private string _editValue = string.Empty;
@@ -153,7 +152,7 @@
             DisplayName = _editValue.Trim();
             _isEditing = false;
             await OnDisplayNameChanged.InvokeAsync(DisplayName);
-            _ = _toastRef.ShowAsync("✓ Saved");
+            ToastService.Show("✓ Saved");
         }
         else
         {

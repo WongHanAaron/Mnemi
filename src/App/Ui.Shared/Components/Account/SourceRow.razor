@@ -9,60 +9,63 @@
         }
         else
         {
-            <input type="text"
-                   class="source-row__input @(_errorMessage is not null ? "source-row__input--error" : "")"
-                   data-testid="source-name-input"
-                   @bind="_editValue"
-                   @bind:event="oninput"
-                   @onkeydown="HandleKeyDown"
-                   maxlength="101"
-                   autofocus />
+            <BbInput Type="InputType.Text"
+                     @bind-Value="_editValue"
+                     data-testid="source-name-input"
+                     @onkeydown="HandleKeyDown"
+                     MaxLength="101"
+                     autofocus
+                     Class="@(_errorMessage is not null ? "border-[var(--destructive)]" : "")" />
             @if (_errorMessage is not null)
             {
                 <span class="source-row__error" data-testid="source-name-error">@_errorMessage</span>
             }
         }
     </div>
-    <span class="source-row__provider-badge" data-testid="source-provider-badge">
-        @IconService.GetSourceProviderLabel(Source.ProviderName)
+    <span data-testid="source-provider-badge">
+        <BbBadge Variant="BadgeVariant.Outline">
+            @IconService.GetSourceProviderLabel(Source.ProviderName)
+        </BbBadge>
     </span>
     <div class="source-row__status-group">
-        <span class="source-row__status @(Source.IsAccessible ? "source-row__status--active" : "source-row__status--error")"
-              data-testid="source-status"
+        <span data-testid="source-status"
               title="@(Source.IsAccessible ? null : Source.LastError)">
-            @(Source.IsAccessible ? "✅ Active" : "⚠️ Error")
+            <BbBadge Variant="@(Source.IsAccessible ? BadgeVariant.Default : BadgeVariant.Destructive)">
+                @(Source.IsAccessible ? "✅ Active" : "⚠️ Error")
+            </BbBadge>
         </span>
     </div>
     <div class="source-row__actions">
         @if (!_isEditing)
         {
-            <button type="button"
-                    class="source-row__action-btn"
-                    data-testid="source-edit-button"
-                    @onclick="EnterEditMode">
+            <BbButton Variant="ButtonVariant.Ghost"
+                      Size="ButtonSize.Small"
+                      data-testid="source-edit-button"
+                      OnClick="EnterEditMode">
                 Edit
-            </button>
-            <button type="button"
-                    class="source-row__action-btn source-row__action-btn--danger"
-                    data-testid="source-remove-button"
-                    @onclick="() => OnRemove.InvokeAsync(Source.SourceId)">
+            </BbButton>
+            <BbButton Variant="ButtonVariant.Ghost"
+                      Size="ButtonSize.Small"
+                      data-testid="source-remove-button"
+                      Class="text-[var(--destructive)]"
+                      OnClick="() => OnRemove.InvokeAsync(Source.SourceId)">
                 Remove
-            </button>
+            </BbButton>
         }
         else
         {
-            <button type="button"
-                    class="source-row__action-btn"
-                    data-testid="source-save-button"
-                    @onclick="SaveEdit">
+            <BbButton Variant="ButtonVariant.Default"
+                      Size="ButtonSize.Small"
+                      data-testid="source-save-button"
+                      OnClick="SaveEdit">
                 Save
-            </button>
-            <button type="button"
-                    class="source-row__action-btn source-row__action-btn--secondary"
-                    data-testid="source-cancel-button"
-                    @onclick="CancelEdit">
+            </BbButton>
+            <BbButton Variant="ButtonVariant.Ghost"
+                      Size="ButtonSize.Small"
+                      data-testid="source-cancel-button"
+                      OnClick="CancelEdit">
                 Cancel
-            </button>
+            </BbButton>
         }
     </div>
 </div>

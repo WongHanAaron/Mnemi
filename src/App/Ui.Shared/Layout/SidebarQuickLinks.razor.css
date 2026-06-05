@@ -1,10 +1,7 @@
 /* ==========================================================================
    SidebarQuickLinks — Quick navigation links section
+   Header styling now handled by parent SidebarSection component.
    ========================================================================== */
-
-.sidebar-quick-links {
-    margin-bottom: 0.5rem;
-}
 
 .sidebar-quick-links ul {
     list-style: none;
@@ -14,25 +11,4 @@
 
 .sidebar-quick-links li {
     margin-bottom: 0.125rem;
-}
-
-.sidebar-quick-links__header {
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-    padding: 0.375rem 0.5rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    user-select: none;
-    color: var(--muted-foreground, #b0b0b0);
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    transition: background 0.15s ease, color 0.15s ease;
-}
-
-.sidebar-quick-links__header:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--sidebar-foreground, #fafafa);
 }

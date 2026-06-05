@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using BlazorBlueprint.Components;
 using Mnemi.Application;
 using Mnemi.Application.Features.FeatureFlags;
 using Mnemi.Application.Home;
@@ -19,6 +20,9 @@ builder.Services.AddControllers();
 
 // Register Application-layer services
 builder.Services.AddApplicationServices();
+
+// Register BlazorBlueprint.Components services (portal, toast, dialog, focus, positioning)
+builder.Services.AddBlazorBlueprintComponents();
 
 // Add device-specific services used by the Ui.Shared project
 builder.Services.AddSingleton<IFormFactor, FormFactor>();

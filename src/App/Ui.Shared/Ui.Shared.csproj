@@ -11,6 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BlazorBlueprint.Components" Version="3.10.2" />
+    <PackageReference Include="BlazorBlueprint.Icons.Lucide" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.0" />
   </ItemGroup>
 

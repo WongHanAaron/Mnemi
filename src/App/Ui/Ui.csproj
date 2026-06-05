@@ -28,6 +28,9 @@
            <MauiXaml Update="MyPage.xaml" Inflator="Runtime" /> (force runtime inflation) -->
     <MauiXamlInflator>SourceGen</MauiXamlInflator>
 
+    <!-- Exclude nested sub-project directories from compilation (they're separate projects) -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);Ui\**;Ui.Shared\**;Ui.Web\**;Ui.Web.Client\**</DefaultItemExcludes>
+
     <!-- Display name -->
     <ApplicationTitle>Ui</ApplicationTitle>
 

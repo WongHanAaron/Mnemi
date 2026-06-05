@@ -1,21 +1,23 @@
 @namespace Ui.Shared.Components.Layout
 
-@* Quick Links — always visible, semantic navigation structure *@
-<nav class="sidebar-quick-links" aria-label="Quick links" data-testid="sidebar-quick-links">
-    <ul>
-        @foreach (var item in QuickLinks)
-        {
-            <li>
-                <Ui.Shared.Components.Layout.SidebarNavLink
-                    Id="@item.Id"
-                    Label="@item.Label"
-                    Href="@item.Href"
-                    IconKind="@item.IconKind"
-                    IsActive="@(string.Equals(item.Href, ActiveRoute, StringComparison.OrdinalIgnoreCase))" />
-            </li>
-        }
-    </ul>
-</nav>
+@* Quick Links — wrapped in SidebarSection for visual consistency with Pinned Decks *@
+<Ui.Shared.Components.Layout.SidebarSection SectionId="quick-links" Label="Navigation" InitiallyExpanded="true">
+    <nav class="sidebar-quick-links" aria-label="Quick links" data-testid="sidebar-quick-links">
+        <ul>
+            @foreach (var item in QuickLinks)
+            {
+                <li>
+                    <Ui.Shared.Components.Layout.SidebarNavLink
+                        Id="@item.Id"
+                        Label="@item.Label"
+                        Href="@item.Href"
+                        IconKind="@item.IconKind"
+                        IsActive="@(string.Equals(item.Href, ActiveRoute, StringComparison.OrdinalIgnoreCase))" />
+                </li>
+            }
+        </ul>
+    </nav>
+</Ui.Shared.Components.Layout.SidebarSection>
 
 @code {
     /// <summary>The current active route, used to highlight the active link.</summary>
